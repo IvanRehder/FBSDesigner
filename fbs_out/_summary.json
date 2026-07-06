@@ -1,8 +1,0 @@
-{
-  "R01": "R01 closed on F-01.1 (pilot sets AP targets); Be-01.1 direct entry primary, Be-01.2 step and Be-01.3 preset as complements; Structure = WAD Setpoint Panel with keypad/steppers/presets (Touch) and bezel rotary + UCP (Keyboard), both paths modality-complete.",
-  "R02": "R02 closed on F-02.1 (pilot aware AP reached target); Be-02.1 discrete event announcement (Screen convergence + one-shot audio callout), modality-complete. Structure = shared AP Target/Current panel (WAD) + audio callout (Audio system, shared notify channel) + dedicated 'reached' flag (HUD).",
-  "R03": "R03 closed on F-03.1 (engage an autopilot mode); Be-03.1.1 direct one-shot mode selection, modality-complete. Structure = Autopilot Mode Panel (WAD, Touch, shared with R02) + Bezel mode OSS (Keyboard).",
-  "R04": "R04 closed on F-04.1 (terminate active AP mode) and F-04.2 (enable manual selection), kept as two Functions once given distinct Behaviours. Be-04.1 re-press-to-deselect (→F-04.1); Be-04.2 one-shot MANUAL affordance (→F-04.2); both modality-complete. Structure reused/extended from R03: WAD mode panel (re-tap) + bezel OSS (shared) + dedicated MANUAL touch button (WAD).",
-  "R05": "R05 closed on F-05.1 (submit structured intel reports to C2). Be-05.1: press-and-hold on Map → option ring → select preset marker → commit/send, modality-complete (Touch/Keyboard). Structure: Map view + option ring + preset buttons + marker glyph layer, all reused/shared with R06/R07 (map-anchored task pattern). Touchpad hardware proposal rejected (not in baseline). Spin-off logged: voice-annotated reporting (separate Function, not designed).",
-  "R06": "Communicates order output via screen and audio, fetching user data by ID from the database."
-}
