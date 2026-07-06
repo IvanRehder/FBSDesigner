@@ -12,9 +12,13 @@ Usage:
     streamlit run app_streamlit.py
 """
 
+import os
 import anthropic
 import streamlit as st
 import fbs_core as core
+
+if "ANTHROPIC_API_KEY" in st.secrets:
+    os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
 
 st.set_page_config(page_title="FBS Design", layout="wide")
 
