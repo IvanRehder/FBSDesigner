@@ -1,0 +1,198 @@
+{
+  "F": [
+    {
+      "label": "F01.1",
+      "requirement": "R01",
+      "text": "To make autopilot flight targets settable by the pilot (commit numeric altitude/heading/speed setpoints)."
+    },
+    {
+      "label": "F02.1",
+      "requirement": "R02",
+      "text": "To make the pilot aware that the autopilot has reached the commanded target."
+    },
+    {
+      "label": "F03.1",
+      "requirement": "R03",
+      "text": "Engage an autopilot mode: transition the aircraft from manual to autopilot-controlled flight by committing it to a selected automation behaviour, with a defined autopilot mode becoming active."
+    },
+    {
+      "label": "F04.1",
+      "requirement": "R04",
+      "text": "To terminate an active autopilot mode."
+    },
+    {
+      "label": "F04.2",
+      "requirement": "R04",
+      "text": "To enable pilot selection of manual flight control."
+    },
+    {
+      "label": "F05.1",
+      "requirement": "R05",
+      "text": "Submit structured intelligence reports to C2."
+    },
+    {
+      "label": "F06.1",
+      "requirement": "R06",
+      "text": "Convey the order's content to the pilot (comprehension of what is tasked): the pilot understands what the order is — type, target/area, parameters — not just that one arrived, via a sustained readable/legible presentation the pilot can parse and reference."
+    }
+  ],
+  "Be": [
+    {
+      "label": "Be01.1.1",
+      "requirement": "R01",
+      "text": "Direct value entry via WAD field (Touch keypad / Keyboard UCP or rotary)."
+    },
+    {
+      "label": "Be01.1.2",
+      "requirement": "R01",
+      "text": "Increment/step value entry via WAD field (Touch keypad / Keyboard UCP or rotary)."
+    },
+    {
+      "label": "Be01.1.3",
+      "requirement": "R01",
+      "text": "Preset pick value entry via WAD field (Touch keypad / Keyboard UCP or rotary)."
+    },
+    {
+      "label": "Be02.1.1",
+      "requirement": "R02",
+      "text": "Discrete event announcement. Screen shows Target field + real-time Current field, awareness via convergence. Audio-out gives a one-shot callout at transition."
+    },
+    {
+      "label": "Be03.1.1",
+      "requirement": "R03",
+      "text": "Direct mode selection (flat, one-shot): each autopilot mode is individually addressable and committing to one is the engagement. Touch: tap the target mode on the WAD Autopilot Mode Panel. Keyboard: a dedicated bezel OSS per mode, or rotary-step to a mode plus a commit button. One deliberate actuation engages the selected mode; full task completable via Touch alone, Keyboard alone, or any mix."
+    },
+    {
+      "label": "Be04.1.1",
+      "requirement": "R04",
+      "text": "Deactivate-by-re-press: the pilot re-presses the currently-active autopilot mode control to deselect it; the HMI forwards the manual-control command and the mode indicator clears on aircraft confirmation. Realized via Touch alone (re-tap active mode on WAD), Keyboard alone (re-press active-mode OSS), or mixed. Realizes F-04.1 (terminate an active autopilot mode)."
+    },
+    {
+      "label": "Be04.2.1",
+      "requirement": "R04",
+      "text": "One-shot disengage: the pilot issues a single discrete action on a dedicated MANUAL affordance to hand control back to manual flight. Realized via Touch alone (tap MANUAL button), Keyboard alone (press MANUAL OSS), or mixed. Realizes F-04.2 (enable pilot selection of manual flight control)."
+    },
+    {
+      "label": "Be05.1.1",
+      "requirement": "R05",
+      "text": "Press-and-hold on Map screen opens an option ring at that location; pilot selects a preset intelligence marker from the ring; selection commits the marker at that map location and sends it to C2. Touch alone (hold on WAD + tap) / Keyboard alone (bezel rotary step + OSS confirm) / mixed."
+    },
+    {
+      "label": "Be06.1.1",
+      "requirement": "R06",
+      "text": " Full parallel presentation**: on order arrival, complete order content rendered persistently on Screen AND spoken in full via templated TTS; either channel alone conveys the complete order."
+    }
+  ],
+  "S": [
+    {
+      "label": "S01.1.1.1",
+      "requirement": "R01",
+      "text": "Autopilot Setpoint Panel (WAD overlay, shared home)."
+    },
+    {
+      "label": "S01.1.1.2",
+      "requirement": "R01",
+      "text": "Numeric keypad (Touch)."
+    },
+    {
+      "label": "S01.1.1.3",
+      "requirement": "R01",
+      "text": "Step controls (Touch)."
+    },
+    {
+      "label": "S01.1.1.4",
+      "requirement": "R01",
+      "text": "Preset list (Touch)."
+    },
+    {
+      "label": "S01.1.1.5",
+      "requirement": "R01",
+      "text": "Bezel rotary+OSS (Keyboard)."
+    },
+    {
+      "label": "S01.1.1.6",
+      "requirement": "R01",
+      "text": "UCP alphanumeric (Keyboard)."
+    },
+    {
+      "label": "S02.1.1.1",
+      "requirement": "R02",
+      "text": "AP Target/Current panel (WAD) — shared with AP-set (1.2.3) and AP-mode/state display."
+    },
+    {
+      "label": "S02.1.1.2",
+      "requirement": "R02",
+      "text": "AP audio callout (Audio system) — shared notify channel across other requirements."
+    },
+    {
+      "label": "S02.1.1.3",
+      "requirement": "R02",
+      "text": "AP 'condition reached' flag (HUD) — dedicated boolean indication, minimal footprint."
+    },
+    {
+      "label": "S03.1.1.1",
+      "requirement": "R03",
+      "text": "Autopilot Mode Panel (WAD): each autopilot mode a directly-tappable on-screen button, one tap engages that mode (Touch path); panel renders active-mode state (shared with R02)."
+    },
+    {
+      "label": "S03.1.1.2",
+      "requirement": "R03",
+      "text": "Bezel mode OSS: one dedicated on-screen-select switch per autopilot mode, one press engages that mode directly (Keyboard path)."
+    },
+    {
+      "label": "S04.1.1.1",
+      "requirement": "R04",
+      "text": "Autopilot mode panel (WAD), shared w/ R03; active-mode controls support re-tap-to-deselect. Touch / Be-04.2."
+    },
+    {
+      "label": "S04.1.1.2",
+      "requirement": "R04",
+      "text": "Bezel mode buttons (OSS), shared w/ R03; active-mode OSS re-press-to-deselect + dedicated MANUAL button. Keyboard / both Behaviours."
+    },
+    {
+      "label": "S04.2.1.1",
+      "requirement": "R04",
+      "text": "Dedicated MANUAL touch button (WAD) on the mode panel, counterpart to bezel MANUAL. Touch / Be-04.1."
+    },
+    {
+      "label": "S05.1.1.1",
+      "requirement": "R05",
+      "text": "Map view (WAD) — existing screen, reused as host surface for press-and-hold interaction and marker rendering. Shared with R06/R07 (map-anchored tasks)."
+    },
+    {
+      "label": "S05.1.1.2",
+      "requirement": "R05",
+      "text": "Option ring — radial menu overlay spawned at the selected map point, listing preset intelligence markers. Shared mechanic pattern with R06/R07; preset content differs per requirement."
+    },
+    {
+      "label": "S05.1.1.3",
+      "requirement": "R05",
+      "text": "Preset marker buttons — selectable intel-taxonomy entries within the option ring (e.g. hostile contact, vehicle, structure)."
+    },
+    {
+      "label": "S05.1.1.4",
+      "requirement": "R05",
+      "text": "Marker glyph layer — WAD overlay rendering committed markers at their map coordinates."
+    },
+    {
+      "label": "S05.1.1.5",
+      "requirement": "R05",
+      "text": "Input bindings (redundant): Touch — press-and-hold on WAD + tap to select/commit; Keyboard — bezel rotary to position/step through presets + OSS to open menu/confirm."
+    },
+    {
+      "label": "S06.2.1",
+      "requirement": "R06",
+      "text": "Order Content Panel(WAD, Screen): persistent templated full-order display; stacked overlay layer on the R05 Map/task surface. Always-complete Screen path."
+    },
+    {
+      "label": "S06.2.2",
+      "requirement": "R06",
+      "text": "Order TTS readout (cockpit audio, Audio-out): templated full-order speech on arrival; reuses R02 shared notify/audio-out channel. Always-complete Audio path."
+    },
+    {
+      "label": "S06.2.3",
+      "requirement": "R06",
+      "text": "HUD order flag (HUD, Screen): minimal eyes-out 'new order' indicator pointing to the WAD panel; supplementary, consistent with R02's dedicated HUD flag."
+    }
+  ]
+}
