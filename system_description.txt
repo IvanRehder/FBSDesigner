@@ -1,0 +1,468 @@
+Manned–Unmanned Teaming (MUM-T) enables human pilots and autonomous systems to operate together, combining the strengths of both to enhance situational awareness, mission effectiveness, and survivability. A manned aircraft teams with one or more Unmanned Aerial Vehicles (UAVs) for reconnaissance, surveillance, target acquisition, and weapon deployment.
+
+In this context, the pilot manages the UAVs while simultaneously flying or supervising their own aircraft. This is a high-workload, safety-critical environment: hands are often occupied with primary flight controls, the cockpit is subject to noise, vibration, and acceleration forces, visual attention is shared between the outside world, flight instruments, and the UAV interface, and any command error can have operational or safety consequences. The interaction modalities chosen for each task must be evaluated against these constraints — not as if used at a desk or ground control station.
+
+I am designing a Multimodal Human-Machine Interface (HMI) for a manned aircraft operating in Intelligence, Surveillance, and Reconnaissance (ISR) missions under the Manned-Unmanned Teaming (MUM-T) paradigm. It enables the Aircraft Pilot to perform eight core capabilities.
+System: Multimodal Human-Machine Interface (HMI)
+Actors: Aircraft Pilot, Aircraft, UAV Pilot, UAV, C2
+
+At the Operational Analysis, the interaction between the pilot and the aircraft is by either the HOTAS or the tradicional HMI.
+
+Any reference to communication between the HMI and human actors shall be interpreted as a functional exchange of information. No words of actions that imply a sensory cue shall be used.
+
+No need to create an element for the HOTAS
+
+Capabilities:
+1. Aircraft Operation
+   The Aircraft Pilot can operate the Aircraft using conventional controls or engage and configure the autopilot through the HMI.
+
+Use cases:
+1.1. Manual Flight Operation using HOTAS.
+Participants: The Aircraft Pilot, the Aircraft.
+1.1.1. Pilot commands the aircraft through HOTAS interaction.
+1.1.2. The aicraft follows the command received from the HOTAS.
+
+1.2. Autopilot Operation.
+Participants: The Aircraft Pilot, the HMI, the Aircraft.
+1.2.1 The pilot engages the autopilot mode through the HMI.
+1.2.2 The HMI registers the command and provides feedback to the pilot.
+1.2.3 The pilot defines the autopilot parameters and sends them to the HMI.
+1.2.4 The HMI forwards the parameters to the aircraft.
+1.2.5 The aircraft activates and executes the autopilot parameters.
+1.2.6 The aircraft informs the HMI that the requested autopilot condition has been achieved.
+1.2.7 The HMI notifies the pilot that the autopilot target has been reached.
+
+1.3. Autopilot override.
+Participants: The Aircraft Pilot, the Aircraft.
+1.3.1 The pilot overrides the autopilot using the HOTAS control.
+1.3.2 The aircraft pauses the autopilot operation in response to the override command.
+1.3.3 The aircraft updates its parameters and attitude according to the pilot’s override inputs.
+1.3.4 The aircraft remains in override mode until the pilot releases the command.
+1.3.5 The pilot releases the override control.
+1.3.6 The last autopilot parameters are sent back to the aircraft.
+1.3.7 The aircraft resumes autopilot operation using the previous parameters.
+1.3.8 The aircraft updates its parameters and attitude after re-engaging the autopilot.
+
+1.4. Autopilot operation desengagement.
+Participants: The Aircraft Pilot, the HMI, the Aircraft.
+1.4.1 The pilot selects manual control to stop using the autopilot.
+1.4.2 The HMI sends the manual control command to the aircraft.
+1.4.3 The aircraft disengages the autopilot and returns control to the pilot.
+
+2. Intelligence and Reconnaissance Orders
+   Receive intelligence and reconnaissance tasks from the Command and Control (C2) and report mission findings.
+
+Use cases:
+2.1. Receive Intelligence/Reconnaissance Order.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the C2.
+2.1.1 C2 issues an intelligence or reconnaissance order to the aircraft.
+2.1.2 The aircraft receives and transmits the order to the HMI.
+2.1.3 The HMI informs the order to the pilot.
+2.1.4 The pilot receives the mission order.
+
+2.2. Transmit Intelligence Data.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the C2.
+2.2.1 The pilot initiates the intelligence gathering or reconnaissance activity.
+2.2.2 The pilot collects and reports the intelligence data.
+2.2.3 The intelligence data is sent from the pilot to the HMI.
+2.2.4 The HMI transmits the intelligence data to the aircraft.
+2.2.5 The aircraft forwards the intelligence data to C2 and receives the intelligence data.
+
+3. Surveillance Orders
+   Receive surveillance tasks from C2 and submit corresponding mission reports.
+
+Use cases:
+3.1. Receive Event Surveillance Order.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the C2.
+3.1.1 C2 issues an event surveillance order to the aircraft.
+3.1.2 The aircraft receives and transmits the order to the HMI.
+3.1.3 The HMI informs the order to the pilot.
+3.1.4 The pilot receives the mission order.
+
+3.2. Transmit Event Surveillance Data.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the C2.
+3.2.1 The pilot initiates the surveillance activity.
+3.2.2 The pilot waits for the surveillance area to be reached and for the event trigger to occur.
+3.2.3 The pilot identifies the event occurrence and reports it.
+3.2.4 The surveillance data is sent from the pilot to the HMI.
+3.2.5 The HMI transmits the surveillance data to the aircraft.
+3.2.6 The aircraft forwards the intelligence data to C2.
+3.2.7 C2 receives the transmitted intelligence data.
+
+
+4. UAV Takeover
+   Request control of an Unmanned Aerial Vehicle (UAV) currently managed by a UAV Pilot.
+
+Use cases:
+
+4.1. Takeover Request .
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the UAV, the UAV Pilot.
+4.1.1 The aircraft pilot initiates a UAV takeover request.
+4.1.2 The HMI transmits the takeover request to the aircraft.
+4.1.3 The aircraft forwards the request to the UAV.
+4.1.4 The UAV sends the takeover request to the UAV pilot.
+4.1.5 The UAV pilot reviews the request and sends an acknowledgment.
+4.1.6 The UAV forwards the response back through the aircraft to the HMI.
+4.1.7 The HMI informs the message to the aircraft pilot.
+
+4.2 Takeover UAV Control
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the UAV, the UAV Pilot.
+4.2.1 The aircraft pilot receives the confirmation notification for the takeover request.
+4.2.2 The aircraft pilot commands the takeover procedure.
+4.2.3 The HMI transmits the takeover command to the aircraft.
+4.2.4 The aircraft requests connection with the UAV.
+4.2.5 The UAV authorizes the connection.
+4.2.6 The aircraft acknowledges that the connection has been established.
+--- In parallel
+4.2.1.7 The aircraft sends an acknowledgment to the HMI.
+4.2.1.8 The HMI informs the connection confirmation to the aircraft pilot.
+4.2.1.9 The aircraft pilot receives the confirmation message.
+-
+4.2.2.10 The UAV shares its status with the aircraft.
+4.2.2.11 The aircraft transmits the UAV status to the HMI.
+4.2.2.12 The HMI informs the UAV status to the aircraft pilot.
+4.2.2.13 The aircraft pilot monitors the UAV after the takeover is completed.
+---
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the UAV, and the UAV Pilot.
+
+5. UAV Control
+   Provide flight parameters to the UAV, such as speed, altitude, and heading.
+
+Use cases:
+
+5.1. UAV Attitude Status.
+Participants: The Aircraft Pilot, the HMI.
+5.1.1 The aircraft pilot asks to receive UAV attitude information from the HMI.
+5.1.2 The HMI informs the pilot of the UAV attitude.
+
+5.2. Update UAV Parameters.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the UAV.
+5.2.1 The aircraft pilot enters new UAV parameters.
+5.2.2 The HMI receives and transmits the new UAV parameters to the aircraft.
+5.2.3 The aircraft forwards the UAV parameters to the UAV.
+5.2.4 The UAV updates its parameters and attitude according to the received data.
+5.2.5 The UAV sends an acknowledgment to the aircraft.
+5.2.6 The aircraft forwards the acknowledgment to the HMI.
+5.2.7 The HMI informs the acknowledgment message to the aircraft pilot.
+5.2.8 The aircraft pilot receives the confirmation message.
+
+6. UAV ISR Operations
+   Direct UAV sensors toward a Point of Interest (POI) or Area of Interest (AOI) and modify its scanning pattern.
+
+Use cases:
+
+6.1. Monitor ISR Sensor Feed.
+Participants: The Aircraft Pilot, the HMI
+6.1.1 The aircraft pilot wants to be informed of the UAV's ISR sensor data from the HMI.
+6.1.2 The HMI informs the pilot of the UAV's ISR sensor data.
+6.1.3 The aircraft pilot monitors the ISR sensor information.
+
+6.2. Move Sensor to POI/AOI.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the UAV.
+6.2.1 The aircraft pilot commands the sensor to move to the selected point or area of interest.
+6.2.2 The HMI receives the pilot’s input and transmits the command to the aircraft.
+6.2.3 The aircraft forwards the command to the UAV.
+6.2.4 The UAV moves the sensor to the specified POI or AOI.
+6.2.5 The UAV sends an acknowledgment to the aircraft after executing the command.
+6.2.6 The aircraft forwards the acknowledgment to the HMI.
+6.2.7 The HMI informs the confirmation message to the aircraft pilot.
+6.2.8 The aircraft pilot receives the acknowledgment.
+
+6.3. Define Search Pattern.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the UAV.
+6.3.1 The aircraft pilot defines a new search pattern.
+6.3.2 The HMI receives the new search pattern and transmits the command to the aircraft.
+6.3.3 The aircraft forwards the command to the UAV.
+6.3.4 The UAV updates its flight pattern according to the new search pattern.
+6.3.5 The UAV sends an acknowledgment to the aircraft after applying the new flight pattern.
+6.3.6 The aircraft forwards the acknowledgment to the HMI.
+6.3.7 The HMI informs the confirmation message to the aircraft pilot.
+6.3.8 The aircraft pilot receives the acknowledgment.
+
+7. UAV Tracking
+   Command the UAV to track a target and define the desired standoff distance.
+
+Use cases:
+
+7.1. Execute Order to Track Target of Interest.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the UAV.
+7.1.1 The aircraft pilot receives the target tracking order.
+7.1.2 The aircraft pilot identifies the target of interest and initiates the tracking action.
+7.1.3 The target of interest data is sent from the aircraft pilot to the HMI.
+7.1.4 The HMI transmits the tracking command to the aircraft.
+7.1.5 The aircraft forwards the target of interest data to the UAV.
+7.1.6 The UAV centers its ISR sensors on the target of interest.
+7.1.7 The UAV sends an acknowledgment to the aircraft after the target tracking command is executed.
+7.1.8 The aircraft forwards the acknowledgment to the HMI.
+7.1.9 The HMI informs the acknowledgment message to the aircraft pilot.
+7.1.10 The aircraft pilot receives the confirmation message.
+
+7.2. Set Tracking Distance to TOI.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the UAV.
+7.2.1 The aircraft pilot defines a new tracking distance to the target of interest.
+7.2.2 The HMI receives the new distance setting and transmits the command to the aircraft.
+7.2.3 The aircraft forwards the distance command to the UAV.
+7.2.4 The UAV adjusts its position to maintain the specified distance from the target of interest.
+7.2.5 The UAV sends an acknowledgment to the aircraft after applying the new distance.
+7.2.6 The aircraft forwards the acknowledgment to the HMI.
+7.2.7 The HMI informs the confirmation message.
+
+8. UAV Handover
+   Transfer UAV control back to the UAV Pilot.
+
+Use cases:
+
+8.1. Hand Over UAV Request.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the UAV, the UAV Pilot.
+8.1.1 The aircraft pilot initiates a handover request.
+8.1.2 The HMI transmits the handover request to the aircraft.
+8.1.3 The aircraft forwards the request to the UAV.
+8.1.4 The UAV sends the handover request to the UAV pilot.
+8.1.5 The UAV pilot reviews the request and sends an acknowledgment.
+8.1.6 The UAV forwards the response back through the aircraft to the HMI.
+8.1.7 The HMI informs the message to the aircraft pilot.
+
+8.2. Hand Over UAV Request.
+Participants: The Aircraft Pilot, the HMI, the Aircraft, the UAV, the UAV Pilot.
+8.2.12 The aircraft pilot issues the handover command.
+8.2.13 The HMI transmits the handover command to the aircraft.
+8.2.14 The aircraft breaks the connection for the handover process.
+--- In parallel
+8.1.15 The aircraft informs the HMI that the data link has been interrupted.
+8.1.16 The HMI hides the UAV status information.
+-
+8.1.17 The aircraft sends an acknowledgment to the HMI.
+8.1.18 The HMI informs the confirmation message for the completed handover.
+---
+
+At the System Analysis, the Multimodal Human-Machine Interface ("The system" here) is considered but the interaction modalities (visual, auditory, tactile, gestural, vocal, wearable, buttons) are not defined at this stage of system modeling.
+
+The system's missions are:
+1. Enhance Situational Awareness through ISR
+Composed of the capabilities 1, 2 and 3 presented before
+
+2. Enable Effective Manned–Unmanned Teaming (MUM-T) for ISR
+Composed of the capabilities 4, 5, 6, 7 and 8 presented before
+
+The capabilities are the same presented before, and the use-case scenarios also, with the replacement of the HMI for the Multimodal HMI
+
+1. Aircraft Operation
+   The Aircraft Pilot can operate the Aircraft using conventional controls or engage and configure the autopilot through the Multimodal HMI.
+
+Use cases:
+1.1. Manual Flight Operation using HOTAS.
+Participants: The Aircraft Pilot, the Aircraft.
+1.1.1. Pilot commands the aircraft through HOTAS interaction.
+1.1.2. The aicraft follows the command received from the HOTAS.
+
+1.2. Autopilot Operation.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft.
+1.2.1 The pilot engages the autopilot mode through the Multimodal HMI.
+1.2.2 The Multimodal HMI registers the command and provides feedback to the pilot.
+1.2.3 The pilot defines the autopilot parameters and sends them to the Multimodal HMI.
+1.2.4 The Multimodal HMI forwards the parameters to the aircraft.
+1.2.5 The aircraft activates and executes the autopilot parameters.
+1.2.6 The aircraft informs the Multimodal HMI that the requested autopilot condition has been achieved.
+1.2.7 The Multimodal HMI notifies the pilot that the autopilot target has been reached.
+
+1.3. Autopilot override.
+Participants: The Aircraft Pilot, the Aircraft.
+1.3.1 The pilot overrides the autopilot using the HOTAS control.
+1.3.2 The aircraft pauses the autopilot operation in response to the override command.
+1.3.3 The aircraft updates its parameters and attitude according to the pilot’s override inputs.
+1.3.4 The aircraft remains in override mode until the pilot releases the command.
+1.3.5 The pilot releases the override control.
+1.3.6 The last autopilot parameters are sent back to the aircraft.
+1.3.7 The aircraft resumes autopilot operation using the previous parameters.
+1.3.8 The aircraft updates its parameters and attitude after re-engaging the autopilot.
+
+1.4. Autopilot operation desengagement.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft.
+1.4.1 The pilot selects manual control to stop using the autopilot.
+1.4.2 The Multimodal HMI sends the manual control command to the aircraft.
+1.4.3 The aircraft disengages the autopilot and returns control to the pilot.
+
+2. Intelligence and Reconnaissance Orders
+   Receive intelligence and reconnaissance tasks from the Command and Control (C2) and report mission findings.
+
+Use cases:
+2.1. Receive Intelligence/Reconnaissance Order.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the C2.
+2.1.1 C2 issues an intelligence or reconnaissance order to the aircraft.
+2.1.2 The aircraft receives and transmits the order to the Multimodal HMI.
+2.1.3 The Multimodal HMI informs the order to the pilot.
+2.1.4 The pilot receives the mission order.
+
+2.2. Transmit Intelligence Data.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the C2.
+2.2.1 The pilot initiates the intelligence gathering or reconnaissance activity.
+2.2.2 The pilot collects and reports the intelligence data.
+2.2.3 The intelligence data is sent from the pilot to the Multimodal HMI.
+2.2.4 The Multimodal HMI transmits the intelligence data to the aircraft.
+2.2.5 The aircraft forwards the intelligence data to C2 and receives the intelligence data.
+
+3. Surveillance Orders
+   Receive surveillance tasks from C2 and submit corresponding mission reports.
+
+Use cases:
+3.1. Receive Event Surveillance Order.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the C2.
+3.1.1 C2 issues an event surveillance order to the aircraft.
+3.1.2 The aircraft receives and transmits the order to the Multimodal HMI.
+3.1.3 The Multimodal HMI informs the order to the pilot.
+3.1.4 The pilot receives the mission order.
+
+3.2. Transmit Event Surveillance Data.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the C2.
+3.2.1 The pilot initiates the surveillance activity.
+3.2.2 The pilot waits for the surveillance area to be reached and for the event trigger to occur.
+3.2.3 The pilot identifies the event occurrence and reports it.
+3.2.4 The surveillance data is sent from the pilot to the Multimodal HMI.
+3.2.5 The Multimodal HMI transmits the surveillance data to the aircraft.
+3.2.6 The aircraft forwards the intelligence data to C2.
+3.2.7 C2 receives the transmitted intelligence data.
+
+
+4. UAV Takeover
+   Request control of an Unmanned Aerial Vehicle (UAV) currently managed by a UAV Pilot.
+
+Use cases:
+
+4.1. Takeover Request .
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the UAV, the UAV Pilot.
+4.1.1 The aircraft pilot initiates a UAV takeover request.
+4.1.2 The Multimodal HMI transmits the takeover request to the aircraft.
+4.1.3 The aircraft forwards the request to the UAV.
+4.1.4 The UAV sends the takeover request to the UAV pilot.
+4.1.5 The UAV pilot reviews the request and sends an acknowledgment.
+4.1.6 The UAV forwards the response back through the aircraft to the Multimodal HMI.
+4.1.7 The Multimodal HMI informs the message to the aircraft pilot.
+
+4.2 Takeover UAV Control
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the UAV, the UAV Pilot.
+4.2.1 The aircraft pilot receives the confirmation notification for the takeover request.
+4.2.2 The aircraft pilot commands the takeover procedure.
+4.2.3 The Multimodal HMI transmits the takeover command to the aircraft.
+4.2.4 The aircraft requests connection with the UAV.
+4.2.5 The UAV authorizes the connection.
+4.2.6 The aircraft acknowledges that the connection has been established.
+--- In parallel
+4.2.1.7 The aircraft sends an acknowledgment to the Multimodal HMI.
+4.2.1.8 The Multimodal HMI informs the connection confirmation to the aircraft pilot.
+4.2.1.9 The aircraft pilot receives the confirmation message.
+-
+4.2.2.10 The UAV shares its status with the aircraft.
+4.2.2.11 The aircraft transmits the UAV status to the Multimodal HMI.
+4.2.2.12 The Multimodal HMI informs the UAV status to the aircraft pilot.
+4.2.2.13 The aircraft pilot monitors the UAV after the takeover is completed.
+---
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the UAV, and the UAV Pilot.
+
+5. UAV Control
+   Provide flight parameters to the UAV, such as speed, altitude, and heading.
+
+Use cases:
+
+5.1. UAV Attitude Status.
+Participants: The Aircraft Pilot, the Multimodal HMI.
+5.1.1 The aircraft pilot asks to receive UAV attitude information from the Multimodal HMI.
+5.1.2 The Multimodal HMI informs the pilot of the UAV attitude.
+
+5.2. Update UAV Parameters.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the UAV.
+5.2.1 The aircraft pilot enters new UAV parameters.
+5.2.2 The Multimodal HMI receives and transmits the new UAV parameters to the aircraft.
+5.2.3 The aircraft forwards the UAV parameters to the UAV.
+5.2.4 The UAV updates its parameters and attitude according to the received data.
+5.2.5 The UAV sends an acknowledgment to the aircraft.
+5.2.6 The aircraft forwards the acknowledgment to the Multimodal HMI.
+5.2.7 The Multimodal HMI informs the acknowledgment message to the aircraft pilot.
+5.2.8 The aircraft pilot receives the confirmation message.
+
+6. UAV ISR Operations
+   Direct UAV sensors toward a Point of Interest (POI) or Area of Interest (AOI) and modify its scanning pattern.
+
+Use cases:
+
+6.1. Monitor ISR Sensor Feed.
+Participants: The Aircraft Pilot, the Multimodal HMI
+6.1.1 The aircraft pilot wants to be informed of the UAV's ISR sensor data from the Multimodal HMI.
+6.1.2 The Multimodal HMI informs the pilot of the UAV's ISR sensor data.
+6.1.3 The aircraft pilot monitors the ISR sensor information.
+
+6.2. Move Sensor to POI/AOI.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the UAV.
+6.2.1 The aircraft pilot commands the sensor to move to the selected point or area of interest.
+6.2.2 The Multimodal HMI receives the pilot’s input and transmits the command to the aircraft.
+6.2.3 The aircraft forwards the command to the UAV.
+6.2.4 The UAV moves the sensor to the specified POI or AOI.
+6.2.5 The UAV sends an acknowledgment to the aircraft after executing the command.
+6.2.6 The aircraft forwards the acknowledgment to the Multimodal HMI.
+6.2.7 The Multimodal HMI informs the confirmation message to the aircraft pilot.
+6.2.8 The aircraft pilot receives the acknowledgment.
+
+6.3. Define Search Pattern.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the UAV.
+6.3.1 The aircraft pilot defines a new search pattern.
+6.3.2 The Multimodal HMI receives the new search pattern and transmits the command to the aircraft.
+6.3.3 The aircraft forwards the command to the UAV.
+6.3.4 The UAV updates its flight pattern according to the new search pattern.
+6.3.5 The UAV sends an acknowledgment to the aircraft after applying the new flight pattern.
+6.3.6 The aircraft forwards the acknowledgment to the Multimodal HMI.
+6.3.7 The Multimodal HMI informs the confirmation message to the aircraft pilot.
+6.3.8 The aircraft pilot receives the acknowledgment.
+
+7. UAV Tracking
+   Command the UAV to track a target and define the desired standoff distance.
+
+Use cases:
+
+7.1. Execute Order to Track Target of Interest.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the UAV.
+7.1.1 The aircraft pilot receives the target tracking order.
+7.1.2 The aircraft pilot identifies the target of interest and initiates the tracking action.
+7.1.3 The target of interest data is sent from the aircraft pilot to the Multimodal HMI.
+7.1.4 The Multimodal HMI transmits the tracking command to the aircraft.
+7.1.5 The aircraft forwards the target of interest data to the UAV.
+7.1.6 The UAV centers its ISR sensors on the target of interest.
+7.1.7 The UAV sends an acknowledgment to the aircraft after the target tracking command is executed.
+7.1.8 The aircraft forwards the acknowledgment to the Multimodal HMI.
+7.1.9 The Multimodal HMI informs the acknowledgment message to the aircraft pilot.
+7.1.10 The aircraft pilot receives the confirmation message.
+
+7.2. Set Tracking Distance to TOI.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the UAV.
+7.2.1 The aircraft pilot defines a new tracking distance to the target of interest.
+7.2.2 The Multimodal HMI receives the new distance setting and transmits the command to the aircraft.
+7.2.3 The aircraft forwards the distance command to the UAV.
+7.2.4 The UAV adjusts its position to maintain the specified distance from the target of interest.
+7.2.5 The UAV sends an acknowledgment to the aircraft after applying the new distance.
+7.2.6 The aircraft forwards the acknowledgment to the Multimodal HMI.
+7.2.7 The Multimodal HMI informs the confirmation message.
+
+8. UAV Handover
+   Transfer UAV control back to the UAV Pilot.
+
+Use cases:
+
+8.1. Hand Over UAV Request.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the UAV, the UAV Pilot.
+8.1.1 The aircraft pilot initiates a handover request.
+8.1.2 The Multimodal HMI transmits the handover request to the aircraft.
+8.1.3 The aircraft forwards the request to the UAV.
+8.1.4 The UAV sends the handover request to the UAV pilot.
+8.1.5 The UAV pilot reviews the request and sends an acknowledgment.
+8.1.6 The UAV forwards the response back through the aircraft to the Multimodal HMI.
+8.1.7 The Multimodal HMI informs the message to the aircraft pilot.
+
+8.2. Hand Over UAV Request.
+Participants: The Aircraft Pilot, the Multimodal HMI, the Aircraft, the UAV, the UAV Pilot.
+8.2.12 The aircraft pilot issues the handover command.
+8.2.13 The Multimodal HMI transmits the handover command to the aircraft.
+8.2.14 The aircraft breaks the connection for the handover process.
+--- In parallel
+8.1.15 The aircraft informs the Multimodal HMI that the data link has been interrupted.
+8.1.16 The Multimodal HMI hides the UAV status information.
+-
+8.1.17 The aircraft sends an acknowledgment to the Multimodal HMI.
+8.1.18 The Multimodal HMI informs the confirmation message for the completed handover.

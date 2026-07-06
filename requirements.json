@@ -1,0 +1,222 @@
+[
+  {
+    "code": "R01",
+    "name_en": "Input Autopilot Parameters",
+    "name_pt": "Inserir Parâmetros do Piloto Automático",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to configure autopilot values (altitude, heading, speed) for engagement."
+  },
+  {
+    "code": "R02",
+    "name_en": "Notify Autopilot Reached",
+    "name_pt": "Notificar Autopiloto",
+    "type": "output",
+    "modalities": [
+      "Screen",
+      "Audio-out"
+    ],
+    "intent": "Inform the pilot that the autopilot has reached the target parameters."
+  },
+  {
+    "code": "R03",
+    "name_en": "Select Autopilot Mode",
+    "name_pt": "Selecionar Piloto Automático",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to turn the autopilot on."
+  },
+  {
+    "code": "R04",
+    "name_en": "Stop Using Autopilot",
+    "name_pt": "Selecionar Piloto Manual",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to disengage the autopilot and resume manual control."
+  },
+  {
+    "code": "R05",
+    "name_en": "Report Intelligence Data",
+    "name_pt": "Reportar Dados de Inteligência",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to send intelligence data to the command/support chain."
+  },
+  {
+    "code": "R06",
+    "name_en": "Communicate Order",
+    "name_pt": "Comunicar Ordem",
+    "type": "output",
+    "modalities": [
+      "Screen",
+      "Audio-out"
+    ],
+    "intent": "Convey an order from the system/command chain to the pilot."
+  },
+  {
+    "code": "R07",
+    "name_en": "Report Surveillance Event",
+    "name_pt": "Reportar Evento de Vigilância",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to report a surveillance event as it happens."
+  },
+  {
+    "code": "R08",
+    "name_en": "Communicate Message (system->user)",
+    "name_pt": "Comunicar Mensagem (sistema→usuário)",
+    "type": "output",
+    "modalities": [
+      "Screen",
+      "Audio-out"
+    ],
+    "intent": "Convey a system-generated message to the pilot."
+  },
+  {
+    "code": "R09",
+    "name_en": "Initiate Takeover Request",
+    "name_pt": "Solicitar Takeover",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to request control takeover of a UAV."
+  },
+  {
+    "code": "R10",
+    "name_en": "Command Takeover",
+    "name_pt": "Comandar Takeover",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to command the takeover of a UAV."
+  },
+  {
+    "code": "R11",
+    "name_en": "Input New UAV Parameters",
+    "name_pt": "Inserir Novos Parâmetros do VANT",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to set new operating parameters for a UAV."
+  },
+  {
+    "code": "R12",
+    "name_en": "Expose UAV Status",
+    "name_pt": "Expor Status do VANT",
+    "type": "input",
+    "modalities": [
+      "Screen",
+      "Touch"
+    ],
+    "intent": "Allow the pilot to request the current status of a UAV."
+  },
+  {
+    "code": "R13",
+    "name_en": "Communicate UAV Status",
+    "name_pt": "Comunicar Status do VANT",
+    "type": "output",
+    "modalities": [
+      "Screen",
+      "Audio-out"
+    ],
+    "intent": "Convey the current status of a UAV to the pilot."
+  },
+  {
+    "code": "R14",
+    "name_en": "Input Sensor Move",
+    "name_pt": "Movimentar o Sensor",
+    "type": "input",
+    "modalities": [
+      "Wearable/HMD",
+      "Touch"
+    ],
+    "intent": "Allow the pilot to move/aim the UAV's sensor."
+  },
+  {
+    "code": "R15",
+    "name_en": "Input Search Pattern",
+    "name_pt": "Inserir Padrão de Busca",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to define a search pattern for sensor/UAV coverage."
+  },
+  {
+    "code": "R16",
+    "name_en": "Expose ISR Sensor Data",
+    "name_pt": "Expor Dados dos Sensores",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to request exposure of ISR sensor data."
+  },
+  {
+    "code": "R17",
+    "name_en": "Command Track Target of Interest (TOI)",
+    "name_pt": "Comandar Rastreamento do Alvo de Interesse",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to command tracking of a target of interest."
+  },
+  {
+    "code": "R18",
+    "name_en": "Set Tracking Distance from TOI",
+    "name_pt": "Inserir Distância de Rastreamento do TOI",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to set the standoff/tracking distance from the target."
+  },
+  {
+    "code": "R19",
+    "name_en": "Initiate Handover Request",
+    "name_pt": "Solicitar Handover",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to request a control handover of a UAV."
+  },
+  {
+    "code": "R20",
+    "name_en": "Command Handover",
+    "name_pt": "Comandar Handover",
+    "type": "input",
+    "modalities": [
+      "Touch",
+      "Keyboard"
+    ],
+    "intent": "Allow the pilot to command a control handover of a UAV."
+  }
+]

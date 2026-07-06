@@ -1,0 +1,63 @@
+=== HMI HARDWARE BASELINE ===
+The Multimodal HMI is built on existing, fixed hardware. Structure proposals
+MUST run on these surfaces. You may design new on-screen/software structures
+freely, but you may NOT introduce new physical hardware.
+
+FIXED HARDWARE (exists, must be used):
+- WAD (Wide Area Display): large full-color touchscreen. IR touch, works with
+  gloves, supports direct manipulation and multi-layer overlays. Primary visual
+  surface. -> covers Touch (input) and Screen (output).
+- WAD Bezel: physical push buttons (On-Screen Switches / OSS) and rotary
+  switches/knobs surrounding the display. -> covers Keyboard-type input
+  (discrete selection, confirmation, stepping).
+- HUD: head-up display, fixed to the cockpit. Visual output overlaid on the
+  forward view. -> covers Screen (output).
+- HMD: helmet-mounted display with embedded visor. In-visor display (output)
+  and head/eye-tracking (input). -> covers Wearable/HMD.
+- UCP (Up Front Control Panel): small char display + alphanumeric keyboard +
+  encoders. -> covers Keyboard (alphanumeric value entry).
+- Audio system: cockpit audio output and voice input (microphone with speech
+  recognition). -> covers Audio-out (output) and Voice-in (input).
+
+ALREADY-IMPLEMENTED SCREENS (existing software, available to reuse):
+- Map view
+- EFIS (Electronic Flight Instrument System)
+- PFD (Primary Flight Display)
+These can be reused, referenced, or extended as needed. You may also design
+NEW screens/windows on top of these — as overlapping (stacked) layers or as
+tiled panels sharing the WAD space — following the same overlay logic already
+used by the hardware (up to 8 stacked sources).
+
+MODALITY -> HARDWARE MAPPING:
+- Touch        -> WAD touchscreen
+- Keyboard     -> WAD bezel (OSS + rotary) and/or UCP alphanumeric keyboard
+- Screen       -> WAD and/or HUD (output)
+- Voice-in     -> cockpit microphone + speech recognition
+- Audio-out    -> cockpit audio
+- Wearable/HMD -> helmet display
+
+FREE DESIGN SPACE (your creativity):
+- On-screen layout, widgets, panels, which OSS maps to what, use of overlay
+  layers, formats per flight-phase. Design these freely on the existing surfaces.
+
+BEHAVIOUR RULE — Modality-complete redundancy:
+For every requirement, the pilot must be able to complete the full task using
+EITHER fixed modality alone, or any mix of both. No modality may be locked to
+a specific sub-step (e.g. "Touch only selects, Keyboard only enters values").
+
+=== APPROVED HARDWARE EXTENSIONS ===
+Hardware not in the original baseline, added by confirmed decision (from
+the designer, or from a proposal you made that got confirmed).
+
+If a requirement seems to need hardware outside FIXED HARDWARE and this list,
+you may PROPOSE it — state what's missing, why existing surfaces don't cover
+it, and what the new hardware would be. Mark it clearly as a proposal
+awaiting confirmation. Don't treat it as approved until the designer confirms;
+only then does it get added below.
+
+Confirmed extensions:
+- TDC (Thumb-operated isometric cursor control device, HOTAS-style):
+  force-sensing mini-joystick integrated into the throttle grip, used for
+  cursor control on WAD content without taking hand off throttle. Distinct
+  from WAD Touch (absolute) — this is relative/rate-based cursor pointing.
+  -> covers Touch (input), cursor-mediated variant, HOTAS-resident.
