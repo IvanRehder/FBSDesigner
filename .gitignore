@@ -3,6 +3,13 @@ __pycache__/
 .env
 .streamlit/secrets.toml
 fbs_out/
+old/
 *.zipgit p
 api_key.env
 Modal_Map.txt
+*.csv
+*.svg
+*.tex
+delphi_comparacao.md
+fbs_design.py
+gen_requirements.py
