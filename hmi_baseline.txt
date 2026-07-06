@@ -56,7 +56,7 @@ awaiting confirmation. Don't treat it as approved until the designer confirms;
 only then does it get added below.
 
 Confirmed extensions:
-- TDC (Thumb-operated isometric cursor control device, HOTAS-style):
+- TDC (Thumb-operated isometric cursor control device, HOTAS-style, mentioned sometimes as Touchpad):
   force-sensing mini-joystick integrated into the throttle grip, used for
   cursor control on WAD content without taking hand off throttle. Distinct
   from WAD Touch (absolute) — this is relative/rate-based cursor pointing.
