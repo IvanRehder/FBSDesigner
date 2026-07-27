@@ -23,7 +23,7 @@ if "FBS_OUT_DIR" in st.secrets:
 
 import fbs_core_human as core
 
-st.set_page_config(page_title="FBS Design — Controle", layout="wide")
+st.set_page_config(page_title="FBS Design ", layout="wide")
 
 LAYERS = ["function", "behaviour", "structure"]
 LAYER_LABEL = {"function": "Function", "behaviour": "Behaviour", "structure": "Structure"}
