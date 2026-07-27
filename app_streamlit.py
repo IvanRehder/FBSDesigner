@@ -61,12 +61,16 @@ MECHANICS_TEXT = """
 Você vai conversar com o Claude, uma camada de cada vez (Function, depois Behaviour, depois Structure), pra cada um dos {n} requisitos. O Claude propõe, você reage — pode pedir ajustes, discordar, pedir outra opção. Quando estiver satisfeito com uma camada, você fecha ela e segue pra próxima. Não tem tempo limite.
 """
 
+def render_intro():
+    st.markdown(INTRO_TEXT)
+    st.markdown(MECHANICS_TEXT.format(n=len(core.REQUIREMENTS)))
+
 def intro_screen():
     if st.session_state.get("intro_seen"):
         return
     st.title("FBS Design")
-    st.markdown(INTRO_TEXT)
-    st.markdown(MECHANICS_TEXT.format(n=len(core.REQUIREMENTS)))
+    render_intro()
+    st.caption("Você pode reabrir esta página a qualquer momento pelo botão ℹ️ na barra lateral.")
     if st.button("Entendi, continuar"):
         st.session_state.intro_seen = True
         st.rerun()
@@ -134,6 +138,9 @@ ss = st.session_state
 with st.sidebar:
     st.title("FBS Design")
     st.caption(f"Designer: {st.session_state.designer_id}")
+    if st.button("ℹ️ Rever instruções", use_container_width=True):
+        st.session_state.show_intro = True
+        st.rerun()
     done = sum(1 for r in core.REQUIREMENTS if core.requirement_done(r["code"]))
     st.progress(done / len(core.REQUIREMENTS),
                 text=f"{done}/{len(core.REQUIREMENTS)} requisitos")
@@ -142,6 +149,13 @@ with st.sidebar:
         mark = "✅" if core.requirement_done(r["code"]) else (
             "🔵" if ss.req and r["code"] == ss.req["code"] else "⚪")
         st.write(f"{mark} {r['code']} — {r['name_en']}")
+
+if st.session_state.get("show_intro"):
+    render_intro()
+    if st.button("← Voltar"):
+        st.session_state.show_intro = False
+        st.rerun()
+    st.stop()
 
 if ss.req is None:
     if not core.sus_done():
