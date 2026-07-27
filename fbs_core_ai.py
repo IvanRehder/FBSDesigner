@@ -24,14 +24,24 @@ BASE_OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "fbs_ai_out"))
 OUT_DIR = BASE_OUT_DIR
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+def sanitize_designer_id(designer_id):
+    return "".join(c if c.isalnum() or c in "-_" else "_" for c in designer_id.strip().lower())
+
+def designer_registered(designer_id):
+    safe = sanitize_designer_id(designer_id)
+    return (BASE_OUT_DIR / safe / "designer_info.json").exists()
+
 def set_designer(designer_id):
-    """Redireciona OUT_DIR pra uma subpasta por designer. Chamar uma vez,
-    antes de qualquer outra função que leia/grave em OUT_DIR."""
+    """Redireciona OUT_DIR pra uma subpasta por designer (case-insensitive).
+    Chamar antes de qualquer outra função que leia/grave em OUT_DIR."""
     global OUT_DIR
-    safe = "".join(c if c.isalnum() or c in "-_" else "_" for c in designer_id.strip().lower())
+    safe = sanitize_designer_id(designer_id)
     OUT_DIR = BASE_OUT_DIR / safe
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     return safe
+
+def save_designer_info(info):
+    (OUT_DIR / "designer_info.json").write_text(json.dumps(info, indent=2, ensure_ascii=False))
 
 SYSTEM_DESCRIPTION = Path("system_description.txt").read_text()
 HMI_BASELINE       = Path("hmi_baseline.txt").read_text()
