@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """
-FBS Design — interface gráfica (Streamlit), condição controle (sem IA).
-O designer escreve Function -> Behaviour -> Structure por conta própria,
-nesta mesma "conversa" (cada mensagem é dele). O Claude só entra no final,
-via core.close_requirement, para extrair/indexar o que já foi decidido —
-não participa da criação do conteúdo. Usa fbs_core_human.py.
+FBS Design — interface gráfica (Streamlit), condição controle (zero IA).
+O designer entra com Function -> Behaviour -> Structure como itens
+estruturados (label + texto), um de cada vez, validando cada um antes
+de avançar de camada. Nenhuma chamada a modelo de linguagem acontece em
+nenhum momento — nem pra sugerir, nem pra extrair/indexar depois.
 
 Setup:
-    pip install streamlit anthropic
-    export ANTHROPIC_API_KEY=sk-...
+    pip install streamlit
 
 Usage:
     streamlit run app_streamlit_controle.py
@@ -17,62 +16,73 @@ Usage:
 import os
 import streamlit as st
 
-if "ANTHROPIC_API_KEY" in st.secrets:
-    os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
 if "FBS_OUT_DIR" in st.secrets:
     os.environ["FBS_OUT_DIR"] = st.secrets["FBS_OUT_DIR"]
 
-import anthropic
 import fbs_core_human as core
 
 st.set_page_config(page_title="FBS Design — Controle", layout="wide")
 
+LAYERS = ["function", "behaviour", "structure"]
+LAYER_LABEL = {"function": "Function", "behaviour": "Behaviour", "structure": "Structure"}
 
-def control_brief(req):
-    r = req["code"][1:]
-    mods = " and ".join(req["modalities"])
-    return (
-        f"Requirement {req['code']} ({req['type']}): {req['name_en']}. "
-        f"Fixed modalities: {mods}. Intent: {req['intent']}.\n\n"
-        "Design this requirement yourself in three layers: Function, Behaviour, "
-        "then Structure. Write your notes below as you go — you can revise a "
-        "layer before moving to the next.\n"
-        f"- Functions: label F-{r}.1, F-{r}.2, ...\n"
-        f"- Behaviours: label Be-{r}.<F>.1, ... using your closed F index.\n"
-        f"- Structures: label S-{r}.<F>.<Be>.1, ... using your closed F and Be indices."
-    )
 
 def init_state():
     ss = st.session_state
-    if "client" not in ss:
-        ss.client = anthropic.Anthropic()
     if "summary" not in ss:
         ss.summary = core.load_summary()
     if "req" not in ss:
         ss.req = core.next_pending_requirement()
-        ss.messages = []
-        ss.warnings = []
+        ss.entries = {"function": [], "behaviour": [], "structure": []}
+        ss.revisions = {"function": 0, "behaviour": 0, "structure": 0}
+        ss.layer_i = 0
         if ss.req:
-            ss.messages = core.load_chat(ss.req["code"])
+            core.mark_started(ss.req["code"])
+            saved = core.load_manual(ss.req["code"])
+            if saved:
+                ss.entries = saved["entries"]
+                ss.revisions = saved["revisions"]
+                ss.layer_i = saved["layer_i"]
 
-def open_requirement_if_needed():
+def persist():
     ss = st.session_state
-    if not ss.messages:
-        core.mark_started(ss.req["code"])
-        ss.messages.append({"role": "user", "content": control_brief(ss.req)})
-        core.save_chat(ss.req["code"], ss.messages)
+    core.save_manual(ss.req["code"], {
+        "entries": ss.entries, "revisions": ss.revisions, "layer_i": ss.layer_i,
+    })
+
+def suggested_label(layer):
+    ss = st.session_state
+    r = ss.req["code"][1:]
+    key = core.LAYER_INDEX_KEY[layer]
+    n = len(ss.entries[layer]) + 1
+    return f"{key}-{r}.{n}"
+
+def add_entry(layer, label, text):
+    ss = st.session_state
+    ss.entries[layer].append({"label": label, "text": text})
+    persist()
+
+def remove_entry(layer, idx):
+    ss = st.session_state
+    ss.entries[layer].pop(idx)
+    ss.revisions[layer] += 1
+    persist()
+
+def advance_layer():
+    ss = st.session_state
+    ss.layer_i += 1
+    persist()
 
 def do_close_requirement():
     ss = st.session_state
-    with st.spinner("Fechando requisito, extraindo F/Be/S e atualizando índice..."):
-        fbs, warnings = core.close_requirement(
-            ss.client, ss.req, ss.messages, ss.summary)
-    ss.warnings = warnings
-    if fbs is None:
-        return  # não avança — mostra os warnings e deixa tentar de novo
+    core.close_requirement_manual(ss.req, ss.entries, ss.revisions, ss.summary)
     st.toast(f"✓ {ss.req['code']} salvo")
     ss.req = core.next_pending_requirement()
-    ss.messages = core.load_chat(ss.req["code"]) if ss.req else []
+    ss.entries = {"function": [], "behaviour": [], "structure": []}
+    ss.revisions = {"function": 0, "behaviour": 0, "structure": 0}
+    ss.layer_i = 0
+    if ss.req:
+        core.mark_started(ss.req["code"])
 
 
 # ── UI ────────────────────────────────────────────────────────────────────────
@@ -95,29 +105,44 @@ if ss.req is None:
     st.stop()
 
 req = ss.req
+layer = LAYERS[ss.layer_i]
+mods = ", ".join(req["modalities"])
+
 st.subheader(f"{req['code']} — {req['name_en']} ({req['type']})")
-st.caption(f"Modalidades: {', '.join(req['modalities'])} · "
-           "você conduz Function → Behaviour → Structure sozinho, sem sugestões")
+st.caption(f"Modalidades: {mods} · camada atual: {LAYER_LABEL[layer]}")
+st.info(f"Intent: {req['intent']}")
 
-for w in ss.warnings:
-    st.warning(f"{w}")
+st.progress(ss.layer_i / 3, text=" → ".join(
+    f"**{LAYER_LABEL[l]}**" if l == layer else LAYER_LABEL[l] for l in LAYERS))
 
-open_requirement_if_needed()
-
-st.info(ss.messages[0]["content"])
-
-for m in ss.messages[1:]:
-    with st.chat_message("user"):
-        st.markdown(m["content"])
-
-col1, col2 = st.columns([4, 1])
-with col2:
-    if st.button("✔ Fechar requisito", type="primary", use_container_width=True):
-        do_close_requirement()
+for i, item in enumerate(ss.entries[layer]):
+    col1, col2 = st.columns([9, 1])
+    col1.markdown(f"**{item['label']}** — {item['text']}")
+    if col2.button("🗑", key=f"del_{layer}_{i}"):
+        remove_entry(layer, i)
         st.rerun()
 
-user_msg = st.chat_input("Escreva sua proposta ou revisão...")
-if user_msg:
-    ss.messages.append({"role": "user", "content": user_msg})
-    core.save_chat(ss.req["code"], ss.messages)
-    st.rerun()
+st.divider()
+n = len(ss.entries[layer])
+label = st.text_input("Label", value=suggested_label(layer), key=f"label_{layer}_{n}")
+text = st.text_area(f"Descreva este {LAYER_LABEL[layer]}", key=f"text_{layer}_{n}")
+
+col1, col2 = st.columns(2)
+if col1.button(f"+ Adicionar {LAYER_LABEL[layer]}", use_container_width=True):
+    if text.strip():
+        add_entry(layer, label, text.strip())
+        st.rerun()
+    else:
+        st.warning("Escreva o conteúdo antes de adicionar.")
+
+can_advance = len(ss.entries[layer]) > 0
+if ss.layer_i < 2:
+    if col2.button(f"✔ Fechar {LAYER_LABEL[layer]} e avançar", type="primary",
+                   use_container_width=True, disabled=not can_advance):
+        advance_layer()
+        st.rerun()
+else:
+    if col2.button("✔ Fechar requisito", type="primary",
+                   use_container_width=True, disabled=not can_advance):
+        do_close_requirement()
+        st.rerun()
