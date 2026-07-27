@@ -6,7 +6,7 @@ O trabalho é organizado em três camadas, sempre nessa ordem, pra cada requisit
 
 Nas definições abaixo, "artefato" é a interface (HMI) — :
 
-- **Artefato** — é uma parte da interface (HMI) (pode ser um compoenten, ou um comjunto de componentes que juntor realizam uma ou mais coisas) que aquele requisito pede pra você definir. Não é o sistema inteiro (aeronave, VANT etc.), só a peça de interação em questão.
+- **Artefato** — é uma parte da interface (HMI) (pode ser um componente, ou um conjunto de componentes que juntor realizam uma ou mais coisas) que aquele requisito pede pra você definir. Não é o sistema inteiro (aeronave, VANT etc.), só a peça de interação em questão.
 - **Function (F)** — pra que o artefato serve. Conecta o objetivo de quem projeta ao efeito mensurável do artefato. Function **não** descreve sequência, ordem, lógica de condução ou passos de confirmação — isso é Behaviour.
 - **Behaviour (Be)** — o que o artefato **faz**: o fluxo de interação que realiza a função, usando só as modalidades fixas daquele requisito.
 - **Structure (S)** — do que o artefato **é feito**: os componentes concretos de HMI e como eles se relacionam.
