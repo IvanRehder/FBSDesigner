@@ -13,7 +13,9 @@ Usage:
 """
 
 import os
+import io
 import json
+import zipfile
 from pathlib import Path
 import streamlit as st
 
@@ -72,6 +74,36 @@ def render_designer_field(f):
     if f["type"] == "select":
         return st.selectbox(f["label"], f["options"])
     raise ValueError(f"tipo de campo desconhecido em designer_fields.json: {f['type']}")
+
+def admin_panel():
+    st.title("Admin — fbs_ai_out")
+
+    req_codes = {r["code"] for r in core.REQUIREMENTS}
+    designers = sorted(p.name for p in core.BASE_OUT_DIR.iterdir() if p.is_dir())
+    if not designers:
+        st.info("Nenhum designer registrado ainda.")
+        st.stop()
+
+    for d in designers:
+        folder = core.BASE_OUT_DIR / d
+        closed = sum(1 for f in folder.glob("*.json") if f.stem in req_codes)
+        sus = "✅ respondeu SUS" if (folder / "sus.json").exists() else "— sem SUS ainda"
+        em_andamento = "🔵 tem requisito em aberto" if list(folder.glob("*_chat.json")) else ""
+        st.write(f"**{d}** — {closed}/{len(core.REQUIREMENTS)} requisitos fechados · {sus} {em_andamento}")
+
+    st.divider()
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for p in core.BASE_OUT_DIR.rglob("*"):
+            if p.is_file():
+                zf.write(p, arcname=p.relative_to(core.BASE_OUT_DIR.parent))
+    st.download_button("⬇️ Baixar tudo (zip)", data=buf.getvalue(),
+                        file_name=f"{core.BASE_OUT_DIR.name}.zip", mime="application/zip")
+    st.stop()
+
+if st.query_params.get("admin") == "300":
+    admin_panel()
+
 
 def designer_gate():
     if "designer_id" in st.session_state:
