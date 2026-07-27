@@ -14,6 +14,8 @@ Usage:
 """
 
 import os
+import json
+from pathlib import Path
 import streamlit as st
 
 if "FBS_OUT_DIR" in st.secrets:
@@ -26,67 +28,81 @@ st.set_page_config(page_title="FBS Design — Controle", layout="wide")
 LAYERS = ["function", "behaviour", "structure"]
 LAYER_LABEL = {"function": "Function", "behaviour": "Behaviour", "structure": "Structure"}
 
-INTRO_TEXT = """
-### O que você vai fazer
-
-Você vai ajudar a definir elementos de uma interface humano-máquina (HMI) multimodal, num sistema de operações **MUM-T** (Manned-Unmanned Teaming) de **ISR** (Intelligence, Surveillance, Reconnaissance). Cada requisito já vem com contexto suficiente (intenção e modalidades fixas) — você não precisa conhecer os detalhes operacionais completos.
-
-O trabalho é organizado em três camadas, sempre nessa ordem, pra cada requisito:
-
-- **Function (F)** — pra que o artefato serve. Conecta o objetivo de quem projeta ao efeito mensurável do artefato. Function **não** descreve sequência, ordem, lógica de condução ou passos de confirmação — isso é Behaviour.
-- **Behaviour (Be)** — o que o artefato **faz**: o fluxo de interação que realiza a função, usando só as modalidades fixas daquele requisito.
-- **Structure (S)** — do que o artefato **é feito**: os componentes concretos de HMI e como eles se relacionam.
-
-Uma Function pode dar origem a mais de um Behaviour, e um Behaviour pode reaproveitar Structure já definida em outro lugar — não é uma relação 1:1:1.
-
-### Modalidades fixas
-
-Cada requisito já vem com uma ou mais modalidades definidas. Use só essas — não introduza outras:
-
-- **Touch** — entrada direta numa tela sensível ao toque (tocar, selecionar, arrastar).
-- **Keyboard** — teclado físico ou virtual e botões; entrada de texto e valores.
-- **Screen** — saída visual; informação renderizada numa tela.
-- **Voice-in** — entrada por comando de voz reconhecido (fala transformada em comando).
-- **Audio-out** — saída sonora do sistema (alerta acústico ou fala sintetizada).
-- **Wearable/HMD** — dispositivo de cabeça (VR/AR/XR). Como entrada: rastreamento de cabeça/olhar, gestos. Como saída: exibição dentro do visor.
-- **Haptic** — retorno tátil / força.
-
-### Como isso vai ser avaliado
-
-Isso faz parte de uma pesquisa de doutorado que compara diferentes formas de derivar decisões de projeto de interface a partir de requisitos. Não existe resposta certa ou errada — o que importa é o processo que você segue. Ao final, tem um questionário curto sobre a experiência de usar a ferramenta.
-"""
-
-MECHANICS_TEXT = """
-### Como funciona aqui
-
-Você vai escrever Function, Behaviour e Structure você mesmo, um item de cada vez: um rótulo (label) e uma descrição. Pode adicionar quantos itens quiser em cada camada, remover e reescrever à vontade antes de avançar. Isso vale pra {n} requisitos. Não tem tempo limite.
-"""
+INTRO_TEXT = Path("intro_text.md").read_text()
+MUMT_TEXT = Path("mumt_text.md").read_text()
+MECHANICS_TEXT = Path("mechanics_human.md").read_text()
+CONDITION = "human"
+DESIGNER_FIELDS = [f for f in json.loads(Path("designer_fields.json").read_text())
+                   if f.get("only_for", CONDITION) == CONDITION]
 
 def render_intro():
     st.markdown(INTRO_TEXT)
     st.markdown(MECHANICS_TEXT.format(n=len(core.REQUIREMENTS)))
 
+def render_mumt():
+    st.markdown(MUMT_TEXT)
+
 def intro_screen():
     if st.session_state.get("intro_seen"):
         return
+    if st.session_state.get("show_mumt"):
+        st.title("Cenário MUM-T")
+        render_mumt()
+        if st.button("← Voltar"):
+            st.session_state.show_mumt = False
+            st.rerun()
+        st.stop()
     st.title("FBS Design — Controle")
     render_intro()
-    st.caption("Você pode reabrir esta página a qualquer momento pelo botão ℹ️ na barra lateral.")
-    if st.button("Entendi, continuar"):
+    col1, col2 = st.columns(2)
+    if col1.button("🛩️ Sobre o cenário MUM-T", use_container_width=True):
+        st.session_state.show_mumt = True
+        st.rerun()
+    if col2.button("Entendi, continuar", type="primary", use_container_width=True):
         st.session_state.intro_seen = True
         st.rerun()
+    st.caption("Você pode reabrir estas páginas a qualquer momento pela barra lateral.")
     st.stop()
 
+
+def render_designer_field(f):
+    if f["type"] == "text":
+        return st.text_input(f["label"])
+    if f["type"] == "number":
+        return st.number_input(f["label"], min_value=f.get("min", 0), max_value=f.get("max", 100), step=f.get("step", 1))
+    if f["type"] == "select":
+        return st.selectbox(f["label"], f["options"])
+    raise ValueError(f"tipo de campo desconhecido em designer_fields.json: {f['type']}")
 
 def designer_gate():
     if "designer_id" in st.session_state:
         return
     st.title("FBS Design — Controle")
     st.caption("Identifique-se antes de começar (combine esse código com o pesquisador).")
-    designer_input = st.text_input("Seu identificador")
-    if st.button("Começar") and designer_input.strip():
-        st.session_state.designer_id = core.set_designer(designer_input)
-        st.rerun()
+    designer_input = st.text_input("Seu identificador", key="designer_input")
+    if not designer_input.strip():
+        st.stop()
+
+    if core.designer_registered(designer_input):
+        if st.button("Continuar"):
+            st.session_state.designer_id = core.set_designer(designer_input)
+            st.rerun()
+        st.stop()
+
+    st.info("Esse identificador ainda não foi usado. Preencha os dados abaixo pra registrar.")
+    with st.form("registro_form"):
+        values = {f["key"]: render_designer_field(f) for f in DESIGNER_FIELDS}
+        registrar = st.form_submit_button("Registrar e continuar")
+    if registrar:
+        missing = [f["label"] for f in DESIGNER_FIELDS
+                   if f.get("required", True) and f["type"] == "text" and not values[f["key"]].strip()]
+        if missing:
+            st.warning(f"Preencha: {', '.join(missing)}")
+        else:
+            safe = core.set_designer(designer_input)
+            core.save_designer_info(values)
+            st.session_state.designer_id = safe
+            st.rerun()
     st.stop()
 
 def init_state():
@@ -159,6 +175,9 @@ with st.sidebar:
     if st.button("ℹ️ Rever instruções", use_container_width=True):
         st.session_state.show_intro = True
         st.rerun()
+    if st.button("🛩️ Cenário MUM-T", use_container_width=True):
+        st.session_state.show_mumt = True
+        st.rerun()
     done = sum(1 for r in core.REQUIREMENTS if core.requirement_done(r["code"]))
     st.progress(done / len(core.REQUIREMENTS),
                 text=f"{done}/{len(core.REQUIREMENTS)} requisitos")
@@ -172,6 +191,13 @@ if st.session_state.get("show_intro"):
     render_intro()
     if st.button("← Voltar"):
         st.session_state.show_intro = False
+        st.rerun()
+    st.stop()
+
+if st.session_state.get("show_mumt"):
+    render_mumt()
+    if st.button("← Voltar"):
+        st.session_state.show_mumt = False
         st.rerun()
     st.stop()
 

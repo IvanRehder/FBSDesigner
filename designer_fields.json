@@ -1,0 +1,67 @@
+[
+  {
+    "key": "formacao",
+    "label": "Qual é a sua formação (ex: Design, Engenharia, Psicologia, etc.)?",
+    "type": "text"
+  },
+  {
+    "key": "tempo_formacao",
+    "label": "Tempo desde o fim da graduação (anos)",
+    "type": "number",
+    "min": 0,
+    "max": 60,
+    "step": 1
+  },
+  {
+    "key": "pos_graduacao",
+    "label": "Pós-graduação (completas) na área",
+    "type": "select",
+    "options": [ "Nenhuma","Especialização", "Mestrado", "Doutorado", "Pós-doutorado"]
+  },
+  {
+    "key": "senioridade",
+    "label": "Como você avalia seu nível de experiência em design de interfaces (seja por trabalho, estudo ou pesquisa)?",
+    "type": "select",
+    "options": ["Iniciante", "Intermediário", "Avançado", "Especialista"]
+  },
+  {
+    "key": "anos_experiencia_hmi",
+    "label": "Anos de experiência em design de interfaces/HMI",
+    "type": "number",
+    "min": 0,
+    "max": 50,
+    "step": 1
+  },
+  {
+    "key": "experiencia_cockpit",
+    "label": "Experiência prévia com cockpit/aviação (seja por voando, estudo ou pesquisa)?",
+    "type": "select",
+    "options": ["Nenhuma", "Alguma", "Extensiva"]
+  },
+  {
+    "key": "familiaridade_fbs",
+    "label": "Familiaridade prévia com o método FBS (Function-Behaviour-Structure)",
+    "type": "select",
+    "options": ["Nunca ouvi falar", "Já ouvi falar, nunca usei", "Já usei algumas vezes", "Uso com frequência"]
+  },
+  {
+    "key": "conforto_ingles_tecnico",
+    "label": "Conforto trabalhando com vocabulário técnico em inglês",
+    "type": "select",
+    "options": ["Baixo — prefiro conteúdo em português", "Médio — leio bem, mas prefiro apoio", "Alto — confortável trabalhando só em inglês"]
+  },
+  {
+    "key": "experiencia_ia_generativa",
+    "label": "Frequência de uso de ferramentas de IA generativa",
+    "type": "select",
+    "options": ["Diário", "Semanalmente", "Mensalmente", "Raramente", "Nenhuma"],
+    "only_for": "ai"
+  },
+  {
+    "key": "atitude_sugestoes_ia",
+    "label": "De modo geral, como você reage a sugestões de IA em tarefas criativas/de design?",
+    "type": "select",
+    "options": ["Costumo desconfiar e revisar bastante", "Neutro, depende do caso", "Costumo confiar e aceitar com poucas mudanças"],
+    "only_for": "ai"
+  }
+]
