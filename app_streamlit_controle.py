@@ -15,12 +15,15 @@ Usage:
 """
 
 import os
-import anthropic
 import streamlit as st
-import fbs_core_human as core
 
 if "ANTHROPIC_API_KEY" in st.secrets:
     os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
+if "FBS_OUT_DIR" in st.secrets:
+    os.environ["FBS_OUT_DIR"] = st.secrets["FBS_OUT_DIR"]
+
+import anthropic
+import fbs_core_human as core
 
 st.set_page_config(page_title="FBS Design — Controle", layout="wide")
 
@@ -101,7 +104,9 @@ for w in ss.warnings:
 
 open_requirement_if_needed()
 
-for m in ss.messages[1:]:  # esconde o brief inicial
+st.info(ss.messages[0]["content"])
+
+for m in ss.messages[1:]:
     with st.chat_message("user"):
         st.markdown(m["content"])
 
