@@ -1,0 +1,83 @@
+{
+  "F": [
+    {
+      "label": "F01.1",
+      "requirement": "R01",
+      "text": "Enable definition of autopilot target values (altitude, heading, speed) that the autopilot will hold."
+    },
+    {
+      "label": "F01.2",
+      "requirement": "R01",
+      "text": "Ensure entered values are valid and unambiguous before commitment, warning the pilot and preventing impossible or unsafe autopilot configuration."
+    },
+    {
+      "label": "F02.2",
+      "requirement": "R02",
+      "text": "Sustain awareness of autopilot conformance (continuous status): keep the pilot aware of whether the autopilot has reached and is still holding the commanded target parameters, notifying both the reached event and any subsequent deviation."
+    },
+    {
+      "label": "F03.1",
+      "requirement": "R03",
+      "text": "Engage autopilot control authority: transfer flight control authority from manual to autopilot, making the autopilot the active controller."
+    },
+    {
+      "label": "F04.1",
+      "requirement": "R04",
+      "text": "Autopilot Disengagement (control transfer to manual): the HMI hands flight authority back from the autopilot to the pilot, so that after invocation the aircraft is under manual control."
+    }
+  ],
+  "Be": [
+    {
+      "label": "Be01.2.1",
+      "requirement": "R01",
+      "text": "Keyboard-only pathway (primary): the pilot enters and adjusts the autopilot values (altitude, heading, speed) using physical buttons and a small numeric keypad; if an out-of-range or invalid value is entered, the system alerts the pilot. Touch remains available as a fallback if the buttons fail."
+    },
+    {
+      "label": "Be02.2.3",
+      "requirement": "R02",
+      "text": "Tela + Som juntos: quando o autopilot atinge o alvo, a telinha fica verde E toca um 'PLIM!' ao mesmo tempo; enquanto está conforme, fica verde quieto na tela; se sair do alvo depois, a tela pisca E toca um bipe de aviso. O piloto vê E ouve, um pathway reforçando o outro."
+    },
+    {
+      "label": "Be03.1.3",
+      "requirement": "R03",
+      "text": "Mixed (either surface, redundant engage): the WAD touch AP control and the bezel OSS are live simultaneously and both map to the same engage action; either modality alone completes the authority transfer, with engaged state reflected via the R02 cue set."
+    },
+    {
+      "label": "Be04.1.2",
+      "requirement": "R04",
+      "text": "Keyboard-only pathway: the pilot actuates a dedicated keyboard/bezel control mapped to autopilot disengage. Discrete physical actuation with no display targeting required, suited to hands/eyes-loaded conditions for a glance-free release. The HMI forwards the manual-control command to the aircraft and reflects the AP-to-manual state change."
+    }
+  ],
+  "S": [
+    {
+      "label": "S01.1.2.3",
+      "requirement": "R01",
+      "text": "Rotary knobs and adjacent buttons beside the main display (WAD bezel): pilot rotates to increment/decrement the autopilot value in small steps for fast, tremor-tolerant adjustment without needing to aim."
+    },
+    {
+      "label": "S01.2.2.3",
+      "requirement": "R01",
+      "text": "Numeric keypad (UCP): pilot types an exact value directly, used for large jumps between very different target numbers."
+    },
+    {
+      "label": "S01.1.2.3-display",
+      "requirement": "R01",
+      "text": "Main display (WAD): shows the current autopilot target values (altitude, heading, speed) and turns red to warn the pilot when an entered value is invalid or out of range."
+    },
+    {
+      "label": "S-02.2.3.3",
+      "requirement": "R02",
+      "text": "Meio-termo: símbolo de status do piloto automático exibido no HUD (vidro frontal) e na tela grande WAD ao mesmo tempo — fica verde quando o alvo é atingido e pisca se o avião sair dos parâmetros; acompanhado de som 'PLIM!' simples no áudio da cabine ao atingir e um bipe de aviso se desviar, sem voz falada contínua."
+    },
+    {
+      "label": "S03.1.3.1",
+      "requirement": "R03",
+      "text": "Botão 'AP' fixo na tela WAD mostrando estado OFF/ARMADO/ENGAJADO, mais OSS dedicado no bezel ao lado com a mesma função de engate, iluminado conforme o estado; ambos usam as cores do R02 (verde/piscando). Estrutura compartilhada com o desengate (capacidade 1.4)."
+    },
+    {
+      "label": "S04.1.2.3",
+      "requirement": "R04",
+      "text": "Bezel rotary detent (MANUAL / AP mode selector); turning the knob to the MANUAL position sends the manual-control command to disengage the autopilot, with the current mode indicated by knob position. Intended as the same shared physical control carrying R03 engagement (AP position)."
+    }
+  ]
+}
