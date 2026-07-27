@@ -30,7 +30,9 @@ st.set_page_config(page_title="FBS Design", layout="wide")
 INTRO_TEXT = Path("intro_text.md").read_text()
 MUMT_TEXT = Path("mumt_text.md").read_text()
 MECHANICS_TEXT = Path("mechanics_ai.md").read_text()
-DESIGNER_FIELDS = json.loads(Path("designer_fields.json").read_text())
+CONDITION = "ai"
+DESIGNER_FIELDS = [f for f in json.loads(Path("designer_fields.json").read_text())
+                   if f.get("only_for", CONDITION) == CONDITION]
 
 def render_intro():
     st.markdown(INTRO_TEXT)
