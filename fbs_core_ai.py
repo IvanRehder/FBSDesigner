@@ -20,8 +20,18 @@ PRICE_PER_MTOK = {"input": 5.0, "output": 25.0}
 # Opções (Opus 4.8): "low" | "medium" | "high" | "xhigh" | "max"
 EFFORT      = "high"   # diálogo (F/Be/S)
 EFFORT_MISC = "low"    # resumos (tarefa trivial)
-OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "fbs_out"))
+BASE_OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "fbs_ai_out"))
+OUT_DIR = BASE_OUT_DIR
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+def set_designer(designer_id):
+    """Redireciona OUT_DIR pra uma subpasta por designer. Chamar uma vez,
+    antes de qualquer outra função que leia/grave em OUT_DIR."""
+    global OUT_DIR
+    safe = "".join(c if c.isalnum() or c in "-_" else "_" for c in designer_id.strip().lower())
+    OUT_DIR = BASE_OUT_DIR / safe
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    return safe
 
 SYSTEM_DESCRIPTION = Path("system_description.txt").read_text()
 HMI_BASELINE       = Path("hmi_baseline.txt").read_text()
@@ -42,17 +52,14 @@ Modality vocabulary (use ONLY these; do not introduce others):
 - Haptic: tactile / force feedback.
 """
 
-SUMMARY_PATH = OUT_DIR / "_summary.json"
-
-
-# ── persistência ──────────────────────────────────────────────────────────────
 def load_summary():
-    if SUMMARY_PATH.exists():
-        return json.loads(SUMMARY_PATH.read_text())
+    p = OUT_DIR / "_summary.json"
+    if p.exists():
+        return json.loads(p.read_text())
     return {}
 
 def save_summary(summary):
-    SUMMARY_PATH.write_text(json.dumps(summary, indent=2, ensure_ascii=False))
+    (OUT_DIR / "_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False))
 
 def load_progress(code):
     p = OUT_DIR / f"{code}_progress.json"
@@ -141,6 +148,36 @@ def next_pending_requirement():
         if not requirement_done(req["code"]):
             return req
     return None
+
+
+# ── SUS (System Usability Scale, Brooke 1996 — wording original) ─────────────
+SUS_ITEMS = [
+    ("I think that I would like to use this system frequently", True),
+    ("I found the system unnecessarily complex", False),
+    ("I thought the system was easy to use", True),
+    ("I think that I would need the support of a technical person to be able to use this system", False),
+    ("I found the various functions in this system were well integrated", True),
+    ("I thought there was too much inconsistency in this system", False),
+    ("I would imagine that most people would learn to use this system very quickly", True),
+    ("I found the system very cumbersome to use", False),
+    ("I felt very confident using the system", True),
+    ("I needed to learn a lot of things before I could get going with this system", False),
+]
+
+def sus_score(responses):
+    total = 0
+    for (_, positive), r in zip(SUS_ITEMS, responses):
+        total += (r - 1) if positive else (5 - r)
+    return round(total * 2.5, 1)
+
+def sus_done():
+    return (OUT_DIR / "sus.json").exists()
+
+def save_sus(responses):
+    score = sus_score(responses)
+    (OUT_DIR / "sus.json").write_text(json.dumps(
+        {"responses": responses, "score": score}, indent=2, ensure_ascii=False))
+    return score
 
 
 # ── system prompt ─────────────────────────────────────────────────────────────

@@ -2,7 +2,8 @@ __pycache__/
 *.pyc
 .env
 .streamlit/secrets.toml
-fbs_out/
+fbs_ai_out/
+fbs_human_out/
 old/
 *.zipgit p
 api_key.env
