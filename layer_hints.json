@@ -1,0 +1,5 @@
+{
+  "function": "Escreva uma frase objetiva dizendo pra que esse artefato serve — o objetivo, não os passos. Ex.: \"Permitir que o usuário faça X.\"",
+  "behaviour": "Descreva o fluxo de interação que realiza a Function acima, usando as modalidades fixas deste requisito. Ex.: \"O usuário faz X, e o sistema responde com Y.\"",
+  "structure": "Liste os elementos concretos de HMI que implementam esse Behaviour. Ex.: \"Ícone na tela X, alto-falante Y.\""
+}

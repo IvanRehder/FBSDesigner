@@ -1,0 +1,20 @@
+{
+  "function": [
+    {
+      "label": "F-TOY.1 teste",
+      "text": "teste"
+    }
+  ],
+  "behaviour": [
+    {
+      "label": "Be-TOY.1 teste",
+      "text": "teste"
+    }
+  ],
+  "structure": [
+    {
+      "label": "S-TOY.1 teste",
+      "text": "teste"
+    }
+  ]
+}
