@@ -190,6 +190,32 @@ def save_sus(responses):
     return score
 
 
+# ── toy problem (aquecimento, sempre zero IA, precisa de aprovação) ──────────
+def load_toy_requirement():
+    return json.loads(Path("toy_requirement.json").read_text())
+
+def toy_status():
+    p = OUT_DIR / "toy_status.json"
+    return json.loads(p.read_text()) if p.exists() else {"submitted": False, "approved": False}
+
+def load_toy_submission():
+    p = OUT_DIR / "toy_submission.json"
+    return json.loads(p.read_text()) if p.exists() else None
+
+def submit_toy_problem(entries):
+    (OUT_DIR / "toy_submission.json").write_text(json.dumps(entries, indent=2, ensure_ascii=False))
+    (OUT_DIR / "toy_status.json").write_text(json.dumps(
+        {"submitted": True, "approved": False}, indent=2, ensure_ascii=False))
+
+def approve_toy(designer_folder):
+    """Usado pelo painel admin, que opera fora do designer 'atual' — por
+    isso recebe a pasta explicitamente em vez de depender de OUT_DIR."""
+    p = designer_folder / "toy_status.json"
+    status = json.loads(p.read_text()) if p.exists() else {"submitted": True, "approved": False}
+    status["approved"] = True
+    p.write_text(json.dumps(status, indent=2, ensure_ascii=False))
+
+
 # ── system prompt ─────────────────────────────────────────────────────────────
 def fbs_system(prior_summary=None):
     prior_block = ""

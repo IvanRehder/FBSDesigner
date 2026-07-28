@@ -1,0 +1,7 @@
+{
+  "code": "TOY",
+  "name_en": "Notify user that the coffee has gotten too cold to drink",
+  "type": "toy",
+  "modalities": ["Screen", "Audio-out"],
+  "intent": "Warn the user when their coffee has cooled below a temperature they'd consider drinkable."
+}

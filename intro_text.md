@@ -4,14 +4,12 @@ Você vai ajudar a definir elementos de uma interface humano-máquina (HMI) mult
 
 O trabalho é organizado em três camadas, sempre nessa ordem, pra cada requisito:
 
-Nas definições abaixo, "artefato" é a interface (HMI) — :
-
-- **Artefato** — é uma parte da interface (HMI) (pode ser um componente, ou um conjunto de componentes que juntor realizam uma ou mais coisas) que aquele requisito pede pra você definir. Não é o sistema inteiro (aeronave, VANT etc.), só a peça de interação em questão.
+- **Artefato** — é uma parte da interface (HMI) (pode ser um componente, ou um conjunto de componentes que juntos realizam uma ou mais coisas) que aquele requisito pede pra você definir. Não é o sistema inteiro (aeronave, VANT etc.), só a peça de interação em questão.
 - **Function (F)** — pra que o artefato serve. Conecta o objetivo de quem projeta ao efeito mensurável do artefato. Function **não** descreve sequência, ordem, lógica de condução ou passos de confirmação — isso é Behaviour.
 - **Behaviour (Be)** — o que o artefato **faz**: o fluxo de interação que realiza a função, usando só as modalidades fixas daquele requisito.
 - **Structure (S)** — do que o artefato **é feito**: os componentes concretos de HMI e como eles se relacionam.
 
-Uma Function pode dar origem a mais de um Behaviour, e um Behaviour pode reaproveitar Structure já definida em outro lugar — não é uma relação 1:1:1.
+Uma Function pode dar origem a mais de um Behaviour, e um Behaviour pode reaproveitar Structure já definida em outro lugar — não é uma relação 1:1:1. Tem um exemplo preenchido, fora do domínio do projeto, no botão "💡 Ver um exemplo" logo abaixo — vale olhar antes de começar.
 
 ### Modalidades fixas
 

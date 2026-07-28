@@ -1,0 +1,19 @@
+[
+  {
+    "file": "wad.png",
+    "caption": "WAD (Wide Area Display) — tela principal"
+  },
+  {
+    "file": "pfd.png",
+    "caption": "PFD (Primary Flight Display) — tela de voo principal"
+  },
+  {
+    "file": "map.png",
+    "caption": "MAP (Navigation Display) — tela de navegação"
+  },
+  {
+    "file": "efis.png",
+    "caption": "EFIS (Electronic Flight Instrument System) — sistema eletrônico de instrumentos de voo"
+  }
+]
+
