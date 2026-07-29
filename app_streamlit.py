@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """
-FBS Design — interface gráfica (Streamlit), condição controle (zero IA).
-O designer entra com Function -> Behaviour -> Structure como itens
-estruturados (label + texto), um de cada vez, validando cada um antes
-de avançar de camada. Nenhuma chamada a modelo de linguagem acontece em
-nenhum momento — nem pra sugerir, nem pra extrair/indexar depois.
+FBS Design — interface gráfica (Streamlit) para o designer.
+Uma conversa por requisito; o modelo conduz F -> Be -> S sozinho.
+Mesma lógica do CLI (fbs_core.py); os dois leem/escrevem fbs_out/.
 
 Setup:
-    pip install streamlit
+    pip install streamlit anthropic
+    export ANTHROPIC_API_KEY=sk-...
 
 Usage:
-    streamlit run app_streamlit_controle.py
+    streamlit run app_streamlit.py
 """
 
 import os
@@ -20,12 +19,15 @@ import zipfile
 from pathlib import Path
 import streamlit as st
 
+if "ANTHROPIC_API_KEY" in st.secrets:
+    os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
 if "FBS_OUT_DIR" in st.secrets:
     os.environ["FBS_OUT_DIR"] = st.secrets["FBS_OUT_DIR"]
 
-import fbs_core_human as core
+import anthropic
+import fbs_core_ai as core
 
-st.set_page_config(page_title="FBS Design — Controle", layout="wide")
+st.set_page_config(page_title="FBS Design", layout="wide")
 
 LAYERS = ["function", "behaviour", "structure"]
 LAYER_LABEL = {"function": "Function", "behaviour": "Behaviour", "structure": "Structure"}
@@ -34,8 +36,8 @@ LAYER_HINTS = json.loads(Path("layer_hints.json").read_text())
 INTRO_TEXT = Path("intro_text.md").read_text()
 MUMT_TEXT = Path("mumt_text.md").read_text()
 EXAMPLE_TEXT = Path("example_text.md").read_text()
-MECHANICS_TEXT = Path("mechanics_human.md").read_text()
-CONDITION = "human"
+MECHANICS_TEXT = Path("mechanics_ai.md").read_text()
+CONDITION = "ai"
 DESIGNER_FIELDS = [f for f in json.loads(Path("designer_fields.json").read_text())
                    if f.get("only_for", CONDITION) == CONDITION]
 
@@ -60,29 +62,18 @@ def render_screens():
     if not screens:
         st.info("Nenhuma tela cadastrada ainda.")
         return
-    st.markdown("""
-        <style>
-        div[class*="st-key-thumb_"] { position: relative; }
-        div[class*="st-key-thumb_"] img { cursor: pointer; transition: filter 0.15s ease; }
-        div[class*="st-key-thumb_"]:hover img { filter: brightness(0.85); }
-        div[class*="st-key-thumb_"] button {
-            position: absolute; inset: 0;
-            width: 100%; height: 100%;
-            opacity: 0; cursor: pointer;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-    for s in screens:
-        path = Path("screens") / s["file"]
-        if path.exists():
-            safe_key = "".join(c if c.isalnum() else "_" for c in s["file"])
-            with st.container(key=f"thumb_{safe_key}"):
-                st.image(str(path), caption=s.get("caption", ""), width=300)
-                clicked = st.button(" ", key=f"zoom_{safe_key}")
-            if clicked:
-                _screen_popup(path, s.get("caption", ""))
-        else:
-            st.warning(f"Imagem não encontrada: screens/{s['file']}")
+    for row_start in range(0, len(screens), 2):
+        row = screens[row_start:row_start + 2]
+        cols = st.columns(2)
+        for col, s in zip(cols, row):
+            with col:
+                path = Path("screens") / s["file"]
+                if path.exists():
+                    st.image(str(path), caption=s.get("caption", ""), use_container_width=True)
+                    if st.button("🔍 Ampliar", key=f"zoom_{s['file']}", use_container_width=True):
+                        _screen_popup(path, s.get("caption", ""))
+                else:
+                    st.warning(f"Imagem não encontrada: screens/{s['file']}")
 
 def intro_screen():
     if st.session_state.get("intro_seen"):
@@ -101,7 +92,7 @@ def intro_screen():
             st.session_state.show_example = False
             st.rerun()
         st.stop()
-    st.title("FBS Design — Controle")
+    st.title("FBS Design")
     render_intro()
     col1, col2, col3 = st.columns(3)
     if col1.button("💡 Ver um exemplo", use_container_width=True):
@@ -127,7 +118,7 @@ def render_designer_field(f):
     raise ValueError(f"tipo de campo desconhecido em designer_fields.json: {f['type']}")
 
 def admin_panel():
-    st.title("Admin — fbs_human_out")
+    st.title("Admin — fbs_ai_out")
 
     req_codes = {r["code"] for r in core.REQUIREMENTS}
     designers = sorted(p.name for p in core.BASE_OUT_DIR.iterdir() if p.is_dir())
@@ -139,7 +130,7 @@ def admin_panel():
         folder = core.BASE_OUT_DIR / d
         closed = sum(1 for f in folder.glob("*.json") if f.stem in req_codes)
         sus = "✅ respondeu SUS" if (folder / "sus.json").exists() else "— sem SUS ainda"
-        em_andamento = "🔵 tem requisito em aberto" if list(folder.glob("*_manual.json")) else ""
+        em_andamento = "🔵 tem requisito em aberto" if list(folder.glob("*_chat.json")) else ""
         st.write(f"**{d}** — {closed}/{len(core.REQUIREMENTS)} requisitos fechados · {sus} {em_andamento}")
 
     st.divider()
@@ -197,7 +188,7 @@ def toy_gate():
 
     st.title("Aquecimento — problema de prática")
     st.markdown("##### Antes dos requisitos reais, resolve esse problema simples. "
-                "Sem nenhuma ajuda de IA.")
+                "Sem nenhuma ajuda de IA, mesmo aqui na condição com IA.")
 
     if status.get("submitted"):
         st.warning("Você já enviou sua resposta. Aguardando aprovação do "
@@ -264,7 +255,7 @@ def toy_gate():
 def designer_gate():
     if "designer_id" in st.session_state:
         return
-    st.title("FBS Design — Controle")
+    st.title("FBS Design")
     st.caption("Identifique-se antes de começar (combine esse código com o pesquisador).")
     designer_input = st.text_input("Seu identificador", key="designer_input")
     if not designer_input.strip():
@@ -292,60 +283,43 @@ def designer_gate():
 
 def init_state():
     ss = st.session_state
+    if "client" not in ss:
+        ss.client = anthropic.Anthropic()
     if "summary" not in ss:
         ss.summary = core.load_summary()
     if "req" not in ss:
         ss.req = core.next_pending_requirement()
-        ss.entries = {"function": [], "behaviour": [], "structure": []}
-        ss.revisions = {"function": 0, "behaviour": 0, "structure": 0}
-        ss.layer_i = 0
+        ss.messages = []
+        ss.warnings = []
         if ss.req:
-            core.mark_started(ss.req["code"])
-            saved = core.load_manual(ss.req["code"])
-            if saved:
-                ss.entries = saved["entries"]
-                ss.revisions = saved["revisions"]
-                ss.layer_i = saved["layer_i"]
+            ss.messages = core.load_chat(ss.req["code"])
 
-def persist():
+def ask_claude():
     ss = st.session_state
-    core.save_manual(ss.req["code"], {
-        "entries": ss.entries, "revisions": ss.revisions, "layer_i": ss.layer_i,
-    })
+    system = core.fbs_system(ss.summary)
+    with st.spinner("Claude pensando..."):
+        reply = core.chat_turn(ss.client, system, ss.messages)
+    ss.messages.append({"role": "assistant", "content": reply})
+    core.save_chat(ss.req["code"], ss.messages)
 
-def suggested_label(layer):
+def open_requirement_if_needed():
     ss = st.session_state
-    r = ss.req["code"][1:]
-    key = core.LAYER_INDEX_KEY[layer]
-    n = len(ss.entries[layer]) + 1
-    return f"{key}-{r}.{n}"
-
-def add_entry(layer, label, text):
-    ss = st.session_state
-    ss.entries[layer].append({"label": label, "text": text})
-    persist()
-
-def remove_entry(layer, idx):
-    ss = st.session_state
-    ss.entries[layer].pop(idx)
-    ss.revisions[layer] += 1
-    persist()
-
-def advance_layer():
-    ss = st.session_state
-    ss.layer_i += 1
-    persist()
+    if not ss.messages:
+        core.mark_started(ss.req["code"])
+        ss.messages.append({"role": "user", "content": core.opening_prompt(ss.req)})
+        ask_claude()
 
 def do_close_requirement():
     ss = st.session_state
-    core.close_requirement_manual(ss.req, ss.entries, ss.revisions, ss.summary)
+    with st.spinner("Fechando requisito, extraindo F/Be/S e atualizando índice..."):
+        fbs, warnings = core.close_requirement(
+            ss.client, ss.req, ss.messages, ss.summary)
+    ss.warnings = warnings
+    if fbs is None:
+        return  # não avança — mostra os warnings e deixa tentar de novo
     st.toast(f"✓ {ss.req['code']} salvo")
     ss.req = core.next_pending_requirement()
-    ss.entries = {"function": [], "behaviour": [], "structure": []}
-    ss.revisions = {"function": 0, "behaviour": 0, "structure": 0}
-    ss.layer_i = 0
-    if ss.req:
-        core.mark_started(ss.req["code"])
+    ss.messages = core.load_chat(ss.req["code"]) if ss.req else []
 
 
 # ── UI ────────────────────────────────────────────────────────────────────────
@@ -356,7 +330,7 @@ init_state()
 ss = st.session_state
 
 with st.sidebar:
-    st.title("FBS Design — Controle")
+    st.title("FBS Design")
     st.caption(f"Designer: {st.session_state.designer_id}")
     if st.button("ℹ️ Rever instruções", use_container_width=True):
         st.session_state.show_intro = True
@@ -429,48 +403,27 @@ if ss.req is None:
     st.stop()
 
 req = ss.req
-layer = LAYERS[ss.layer_i]
-mods = ", ".join(req["modalities"])
+st.subheader(f"{req['code']} — {req['name_en']} ({req['type']})")
+st.caption(f"Modalidades: {', '.join(req['modalities'])} · "
+           "o Claude conduz Function → Behaviour → Structure nesta mesma conversa")
 
-st.success(f"### {req['code']} — {req['name_en']} ({req['type']})\nModalidades: {mods}  \nIntent: {req['intent']}")
+for w in ss.warnings:
+    st.warning(f"{w}")
 
-st.progress(ss.layer_i / 3, text=" → ".join(
-    f"**{LAYER_LABEL[l]}**" if l == layer else LAYER_LABEL[l] for l in LAYERS))
+open_requirement_if_needed()
 
-for prev in LAYERS[:ss.layer_i]:
-    with st.expander(f"{LAYER_LABEL[prev]} definidas ({len(ss.entries[prev])})", expanded=True):
-        for item in ss.entries[prev]:
-            st.markdown(f"**{item['label']}** — {item['text']}")
+for m in ss.messages[1:]:  # esconde o opening_prompt
+    with st.chat_message("assistant" if m["role"] == "assistant" else "user"):
+        st.markdown(m["content"])
 
-for i, item in enumerate(ss.entries[layer]):
-    col1, col2 = st.columns([9, 1])
-    col1.markdown(f"**{item['label']}** — {item['text']}")
-    if col2.button("🗑", key=f"del_{layer}_{i}"):
-        remove_entry(layer, i)
-        st.rerun()
-
-st.divider()
-st.markdown(f"##### 👉 {LAYER_HINTS[layer]}")
-n = len(ss.entries[layer])
-label = st.text_input("Label", value=suggested_label(layer), key=f"label_{layer}_{n}")
-text = st.text_area(f"Descreva este {LAYER_LABEL[layer]}", key=f"text_{layer}_{n}")
-
-col1, col2 = st.columns(2)
-if col1.button(f"+ Adicionar {LAYER_LABEL[layer]}", use_container_width=True):
-    if text.strip():
-        add_entry(layer, label, text.strip())
-        st.rerun()
-    else:
-        st.warning("Escreva o conteúdo antes de adicionar.")
-
-can_advance = len(ss.entries[layer]) > 0
-if ss.layer_i < 2:
-    if col2.button(f"✔ Fechar {LAYER_LABEL[layer]} e avançar", type="primary",
-                   use_container_width=True, disabled=not can_advance):
-        advance_layer()
-        st.rerun()
-else:
-    if col2.button("✔ Fechar requisito", type="primary",
-                   use_container_width=True, disabled=not can_advance):
+col1, col2 = st.columns([4, 1])
+with col2:
+    if st.button("✔ Fechar requisito", type="primary", use_container_width=True):
         do_close_requirement()
         st.rerun()
+
+user_msg = st.chat_input("Responda ao Claude (discussão livre)...")
+if user_msg:
+    ss.messages.append({"role": "user", "content": user_msg})
+    ask_claude()
+    st.rerun()
