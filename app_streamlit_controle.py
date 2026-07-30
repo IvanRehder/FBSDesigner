@@ -202,8 +202,7 @@ def toy_gate():
         st.stop()
 
     layer = LAYERS[ss.toy_layer_i]
-    mods = ", ".join(toy_req["modalities"])
-    st.success(f"### {toy_req['name_en']}\nModalidades: {mods}  \nIntent: {toy_req['intent']}")
+    st.success(f"### {toy_req['name_en']}\nIntent: {toy_req['intent']}")
 
     st.progress(ss.toy_layer_i / 3, text=" → ".join(
         f"**{LAYER_LABEL[l]}**" if l == layer else LAYER_LABEL[l] for l in LAYERS))
