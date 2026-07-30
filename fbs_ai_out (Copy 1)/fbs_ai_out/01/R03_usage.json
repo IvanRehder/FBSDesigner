@@ -1,0 +1,77 @@
+{
+  "calls": [
+    {
+      "input_tokens": 3583,
+      "output_tokens": 371,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "elapsed_s": 5.56
+    },
+    {
+      "input_tokens": 3554,
+      "output_tokens": 67,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "elapsed_s": 2.53
+    },
+    {
+      "input_tokens": 3560,
+      "output_tokens": 111,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "elapsed_s": 4.75
+    },
+    {
+      "input_tokens": 3562,
+      "output_tokens": 157,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "elapsed_s": 3.72
+    },
+    {
+      "input_tokens": 82,
+      "output_tokens": 19,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "elapsed_s": 1.35
+    },
+    {
+      "input_tokens": 126,
+      "output_tokens": 22,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "elapsed_s": 2.59
+    },
+    {
+      "input_tokens": 194,
+      "output_tokens": 23,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "elapsed_s": 1.38
+    },
+    {
+      "input_tokens": 524,
+      "output_tokens": 58,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "elapsed_s": 2.46
+    }
+  ],
+  "totals": {
+    "calls": 8,
+    "input_tokens": 15185,
+    "output_tokens": 828,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0,
+    "total_tokens": 16013,
+    "elapsed_s": 24.34,
+    "cost_usd": 0.0966,
+    "user_turns": 5,
+    "revisions": {
+      "function": 0,
+      "behaviour": 0,
+      "structure": 0
+    },
+    "wall_clock_s": 415.3
+  }
+}

@@ -215,6 +215,13 @@ def approve_toy(designer_folder):
     status["approved"] = True
     p.write_text(json.dumps(status, indent=2, ensure_ascii=False))
 
+def reopen_toy():
+    """Usado pelo próprio designer, na tela de 'aguardando aprovação', pra
+    poder editar e reenviar em vez de ficar travado esperando."""
+    status = toy_status()
+    status["submitted"] = False
+    (OUT_DIR / "toy_status.json").write_text(json.dumps(status, indent=2, ensure_ascii=False))
+
 
 # ── system prompt ─────────────────────────────────────────────────────────────
 def fbs_system(prior_summary=None):

@@ -184,7 +184,6 @@ def toy_gate():
         saved = core.load_toy_submission()
         if saved:
             ss.toy_entries = saved
-            ss.toy_layer_i = 3
 
     st.title("Aquecimento — problema de prática")
     st.markdown("##### Antes dos requisitos reais, resolve esse problema simples. "
@@ -193,7 +192,11 @@ def toy_gate():
     if status.get("submitted"):
         st.warning("Você já enviou sua resposta. Aguardando aprovação do "
                    "pesquisador pra liberar os requisitos reais.")
-        if st.button("🔄 Verificar de novo"):
+        col1, col2 = st.columns(2)
+        if col1.button("🔄 Verificar de novo", use_container_width=True):
+            st.rerun()
+        if col2.button("✏️ Editar resposta", use_container_width=True):
+            core.reopen_toy()
             st.rerun()
         st.stop()
 
