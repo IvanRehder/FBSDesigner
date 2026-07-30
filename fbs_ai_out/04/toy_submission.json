@@ -1,0 +1,20 @@
+{
+  "function": [
+    {
+      "label": "F-TOY.1",
+      "text": "informa que o café está com temperatura inadequada"
+    }
+  ],
+  "behaviour": [
+    {
+      "label": "Be-TOY.1",
+      "text": "medir temperatura > comparar com limite mínimo > emitir sinal"
+    }
+  ],
+  "structure": [
+    {
+      "label": "S-TOY.1",
+      "text": "recipiente + sensor + controlador + alarme (buzzer)"
+    }
+  ]
+}
