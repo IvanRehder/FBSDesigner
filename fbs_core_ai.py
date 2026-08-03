@@ -8,6 +8,7 @@ import anthropic
 import json
 import os
 import time
+import streamlit as st
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -21,8 +22,15 @@ PRICE_PER_MTOK = {"input": 5.0, "output": 25.0}
 EFFORT      = "high"   # diálogo (F/Be/S)
 EFFORT_MISC = "low"    # resumos (tarefa trivial)
 BASE_OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "fbs_ai_out"))
-OUT_DIR = BASE_OUT_DIR
-OUT_DIR.mkdir(parents=True, exist_ok=True)
+BASE_OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+def current_out_dir():
+    """A pasta do designer atual. Vive em st.session_state (isolado por
+    sessão de verdade) — NUNCA numa variável global do módulo, porque no
+    Streamlit Cloud todos os usuários conectados ao mesmo app compartilham
+    o mesmo processo Python, e uma variável global mutável vazaria dados
+    de um designer pra sessão de outro."""
+    return st.session_state.get("out_dir", BASE_OUT_DIR)
 
 def sanitize_designer_id(designer_id):
     return "".join(c if c.isalnum() or c in "-_" else "_" for c in designer_id.strip().lower())
@@ -32,16 +40,18 @@ def designer_registered(designer_id):
     return (BASE_OUT_DIR / safe / "designer_info.json").exists()
 
 def set_designer(designer_id):
-    """Redireciona OUT_DIR pra uma subpasta por designer (case-insensitive).
-    Chamar antes de qualquer outra função que leia/grave em OUT_DIR."""
-    global OUT_DIR
+    """Redireciona a pasta do designer atual pra uma subpasta por designer
+    (case-insensitive). Chamar antes de qualquer outra função que leia/
+    grave dados do designer. Guarda em st.session_state — isolado por
+    sessão, ao contrário de uma variável global do módulo."""
     safe = sanitize_designer_id(designer_id)
-    OUT_DIR = BASE_OUT_DIR / safe
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    d = BASE_OUT_DIR / safe
+    d.mkdir(parents=True, exist_ok=True)
+    st.session_state.out_dir = d
     return safe
 
 def save_designer_info(info):
-    (OUT_DIR / "designer_info.json").write_text(json.dumps(info, indent=2, ensure_ascii=False))
+    (current_out_dir() / "designer_info.json").write_text(json.dumps(info, indent=2, ensure_ascii=False))
 
 SYSTEM_DESCRIPTION = Path("system_description.txt").read_text()
 HMI_BASELINE       = Path("hmi_baseline.txt").read_text()
@@ -63,50 +73,50 @@ Modality vocabulary (use ONLY these; do not introduce others):
 """
 
 def load_summary():
-    p = OUT_DIR / "_summary.json"
+    p = current_out_dir() / "_summary.json"
     if p.exists():
         return json.loads(p.read_text())
     return {}
 
 def save_summary(summary):
-    (OUT_DIR / "_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False))
+    (current_out_dir() / "_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False))
 
 def load_progress(code):
-    p = OUT_DIR / f"{code}_progress.json"
+    p = current_out_dir() / f"{code}_progress.json"
     return json.loads(p.read_text()) if p.exists() else {}
 
 def save_progress(code, layer, close_text):
-    p = OUT_DIR / f"{code}_progress.json"
+    p = current_out_dir() / f"{code}_progress.json"
     data = load_progress(code)
     data[layer] = close_text
     p.write_text(json.dumps(data, indent=2, ensure_ascii=False))
 
 def clear_progress(code):
-    p = OUT_DIR / f"{code}_progress.json"
+    p = current_out_dir() / f"{code}_progress.json"
     if p.exists():
         p.unlink()
 
 def append_to_index(layer, label, code, text):
-    idx_path = OUT_DIR / "elements_index.json"
+    idx_path = current_out_dir() / "elements_index.json"
     idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"F": [], "Be": [], "S": []}
     idx[layer].append({"label": label, "requirement": code, "text": text})
     idx_path.write_text(json.dumps(idx, indent=2, ensure_ascii=False))
 
 def save_chat(code, messages):
-    (OUT_DIR / f"{code}_chat.json").write_text(
+    (current_out_dir() / f"{code}_chat.json").write_text(
         json.dumps(messages, indent=2, ensure_ascii=False))
 
 def load_chat(code):
-    p = OUT_DIR / f"{code}_chat.json"
+    p = current_out_dir() / f"{code}_chat.json"
     return json.loads(p.read_text()) if p.exists() else []
 
 def clear_chat(code):
-    p = OUT_DIR / f"{code}_chat.json"
+    p = current_out_dir() / f"{code}_chat.json"
     if p.exists():
         p.unlink()
 
 def _started_path(code):
-    return OUT_DIR / f"{code}_started.txt"
+    return current_out_dir() / f"{code}_started.txt"
 
 def mark_started(code):
     p = _started_path(code)
@@ -151,7 +161,7 @@ def extract_closed_layers(client, code, messages, on_retry=None, usage_log=None)
         return None, f"parse falhou: {e}"
 
 def requirement_done(code):
-    return (OUT_DIR / f"{code}.json").exists()
+    return (current_out_dir() / f"{code}.json").exists()
 
 def next_pending_requirement():
     for req in REQUIREMENTS:
@@ -181,11 +191,11 @@ def sus_score(responses):
     return round(total * 2.5, 1)
 
 def sus_done():
-    return (OUT_DIR / "sus.json").exists()
+    return (current_out_dir() / "sus.json").exists()
 
 def save_sus(responses):
     score = sus_score(responses)
-    (OUT_DIR / "sus.json").write_text(json.dumps(
+    (current_out_dir() / "sus.json").write_text(json.dumps(
         {"responses": responses, "score": score}, indent=2, ensure_ascii=False))
     return score
 
@@ -195,21 +205,21 @@ def load_toy_requirement():
     return json.loads(Path("toy_requirement.json").read_text())
 
 def toy_status():
-    p = OUT_DIR / "toy_status.json"
+    p = current_out_dir() / "toy_status.json"
     return json.loads(p.read_text()) if p.exists() else {"submitted": False, "approved": False}
 
 def load_toy_submission():
-    p = OUT_DIR / "toy_submission.json"
+    p = current_out_dir() / "toy_submission.json"
     return json.loads(p.read_text()) if p.exists() else None
 
 def submit_toy_problem(entries):
-    (OUT_DIR / "toy_submission.json").write_text(json.dumps(entries, indent=2, ensure_ascii=False))
-    (OUT_DIR / "toy_status.json").write_text(json.dumps(
+    (current_out_dir() / "toy_submission.json").write_text(json.dumps(entries, indent=2, ensure_ascii=False))
+    (current_out_dir() / "toy_status.json").write_text(json.dumps(
         {"submitted": True, "approved": False}, indent=2, ensure_ascii=False))
 
 def approve_toy(designer_folder):
     """Usado pelo painel admin, que opera fora do designer 'atual' — por
-    isso recebe a pasta explicitamente em vez de depender de OUT_DIR."""
+    isso recebe a pasta explicitamente em vez de depender de current_out_dir()."""
     p = designer_folder / "toy_status.json"
     status = json.loads(p.read_text()) if p.exists() else {"submitted": True, "approved": False}
     status["approved"] = True
@@ -220,7 +230,7 @@ def reopen_toy():
     poder editar e reenviar em vez de ficar travado esperando."""
     status = toy_status()
     status["submitted"] = False
-    (OUT_DIR / "toy_status.json").write_text(json.dumps(status, indent=2, ensure_ascii=False))
+    (current_out_dir() / "toy_status.json").write_text(json.dumps(status, indent=2, ensure_ascii=False))
 
 
 # ── system prompt ─────────────────────────────────────────────────────────────
@@ -348,7 +358,7 @@ def save_usage(code, usage_log, process_stats=None):
     totals = usage_totals(usage_log)
     if process_stats:
         totals.update(process_stats)
-    (OUT_DIR / f"{code}_usage.json").write_text(json.dumps(
+    (current_out_dir() / f"{code}_usage.json").write_text(json.dumps(
         {"calls": usage_log, "totals": totals}, indent=2, ensure_ascii=False))
     return totals
 
@@ -426,6 +436,7 @@ def close_requirement(client, req, messages, summary, on_retry=None, usage_log=N
     fbs = {
         "code": code, "name_en": req["name_en"], "type": req["type"],
         "modalities": req["modalities"],
+        "closed_at": time.time(),
         "function": layers["function"],
         "function_summary": summarize_layer(client, layers["function"], "Function", on_retry, usage_log),
         "behaviour": layers["behaviour"],
@@ -433,9 +444,9 @@ def close_requirement(client, req, messages, summary, on_retry=None, usage_log=N
         "structure": layers["structure"],
         "structure_summary": summarize_layer(client, layers["structure"], "Structure", on_retry, usage_log),
     }
-    (OUT_DIR / f"{code}.json").write_text(json.dumps(fbs, indent=2, ensure_ascii=False))
-    (OUT_DIR / f"{code}_log.json").write_text(json.dumps(messages, indent=2, ensure_ascii=False))
-    (OUT_DIR / f"{code}_summary.md").write_text(
+    (current_out_dir() / f"{code}.json").write_text(json.dumps(fbs, indent=2, ensure_ascii=False))
+    (current_out_dir() / f"{code}_log.json").write_text(json.dumps(messages, indent=2, ensure_ascii=False))
+    (current_out_dir() / f"{code}_summary.md").write_text(
         f"# {code} — {req['name_en']} ({req['type']})\n\n"
         f"**Modalities:** {mods}\n\n"
         f"## Function\n{layers['function']}\n\n"
@@ -455,3 +466,43 @@ def close_requirement(client, req, messages, summary, on_retry=None, usage_log=N
     clear_progress(code)
     _started_path(code).unlink(missing_ok=True)
     return fbs, warnings
+
+
+# ── revisão de requisito já fechado ───────────────────────────────────────────
+def reopen_requirement(code):
+    """Designer decidiu revisar um requisito já fechado. Arquiva o
+    fechamento antigo (não perde o dado) e libera o código pra ser refeito.
+    Retorna (closed_at antigo, conteúdo antigo de {code}_log.json) — o
+    primeiro pra saber quem foi fechado depois, o segundo pra quem quiser
+    recarregar o conteúdo anterior pra edição."""
+    p = current_out_dir() / f"{code}.json"
+    old = json.loads(p.read_text())
+    old_closed_at = old.get("closed_at")
+    old_log_path = current_out_dir() / f"{code}_log.json"
+    old_log = json.loads(old_log_path.read_text()) if old_log_path.exists() else None
+    n = 1
+    while (current_out_dir() / f"{code}_prev{n}.json").exists():
+        n += 1
+    p.rename(current_out_dir() / f"{code}_prev{n}.json")
+    for suffix in ("_log.json", "_summary.md", "_usage.json"):
+        src = current_out_dir() / f"{code}{suffix}"
+        if src.exists():
+            src.rename(current_out_dir() / f"{code}_prev{n}{suffix}")
+    return old_closed_at, old_log
+
+def downstream_affected(code, old_closed_at):
+    """Requisitos já fechados depois de `code` (podem ter usado a versão
+    antiga dele como parte do contexto de consistência)."""
+    if old_closed_at is None:
+        return []
+    affected = []
+    for req in REQUIREMENTS:
+        other = req["code"]
+        if other == code:
+            continue
+        p = current_out_dir() / f"{other}.json"
+        if p.exists():
+            data = json.loads(p.read_text())
+            if data.get("closed_at", 0) > old_closed_at:
+                affected.append(other)
+    return affected
