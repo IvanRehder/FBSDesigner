@@ -1,6 +1,0 @@
-{
-  "R01": "R01 sets and validates autopilot targets (altitude, heading, speed) via a dual-input interface of bezel rotary knobs, a numeric keypad, and a validating display that flags invalid entries.",
-  "R02": "R02 notifies autopilot target capture/hold status via redundant HUD+WAD visual cues (green/flashing) plus simple audio tones, balancing multi-channel awareness without overusing voice callouts.",
-  "R03": "Autopilot engagement transfers control from manual to autopilot via a state-mirrored AP widget paired with a redundant bezel button (touch or keyboard independently engages).",
-  "R04": "R04 disengages the autopilot to hand flight control back to the pilot via a tactile, glance-free bezel rotary selector with self-evident MANUAL/AP detent positions (shared with R03)."
-}

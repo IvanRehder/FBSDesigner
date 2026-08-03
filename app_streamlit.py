@@ -320,8 +320,21 @@ def do_close_requirement():
     if fbs is None:
         return  # não avança — mostra os warnings e deixa tentar de novo
     st.toast(f"✓ {ss.req['code']} salvo")
+    if ss.get("revising_code"):
+        ss.revision_notice = core.downstream_affected(ss.revising_code, ss.revising_old_closed_at)
+        ss.revising_code = None
+        ss.revising_old_closed_at = None
     ss.req = core.next_pending_requirement()
     ss.messages = core.load_chat(ss.req["code"]) if ss.req else []
+
+def start_revision(code):
+    ss = st.session_state
+    old_closed_at, _ = core.reopen_requirement(code)
+    ss.revising_code = code
+    ss.revising_old_closed_at = old_closed_at
+    ss.req = next(r for r in core.REQUIREMENTS if r["code"] == code)
+    ss.messages = []
+    ss.warnings = []
 
 
 # ── UI ────────────────────────────────────────────────────────────────────────
@@ -355,6 +368,15 @@ with st.sidebar:
             "🔵" if ss.req and r["code"] == ss.req["code"] else "⚪")
         st.write(f"{mark} {r['code']} — {r['name_en']}")
 
+    done_codes = [r["code"] for r in core.REQUIREMENTS if core.requirement_done(r["code"])]
+    if done_codes:
+        st.divider()
+        st.caption("Revisar um requisito já fechado")
+        pick = st.selectbox("Requisito", done_codes, label_visibility="collapsed", key="revise_pick")
+        if st.button("✏️ Revisar", use_container_width=True):
+            start_revision(pick)
+            st.rerun()
+
 if st.session_state.get("show_intro"):
     render_intro()
     if st.button("← Voltar"):
@@ -383,6 +405,20 @@ if st.session_state.get("show_screens"):
         st.rerun()
     st.stop()
 
+if ss.get("revision_notice") is not None:
+    affected = ss.revision_notice
+    if affected:
+        st.warning(
+            "Estes requisitos já tinham sido fechados usando a versão anterior "
+            f"deste como referência: **{', '.join(affected)}**. Pode valer a pena "
+            "reconferir se ainda fazem sentido juntos."
+        )
+    else:
+        st.success("Nenhum requisito posterior foi afetado por essa revisão.")
+    if st.button("OK, entendi"):
+        ss.revision_notice = None
+        st.rerun()
+
 if ss.req is None:
     if not core.sus_done():
         st.subheader("Quase lá — um questionário rápido")
@@ -401,7 +437,7 @@ if ss.req is None:
                 core.save_sus(responses)
                 st.rerun()
     else:
-        st.success(f"Todos os requisitos fechados e questionário respondido. Artefatos em {core.OUT_DIR}/.")
+        st.success(f"Todos os requisitos fechados e questionário respondido. Artefatos em {core.current_out_dir()}/.")
     st.stop()
 
 req = ss.req
