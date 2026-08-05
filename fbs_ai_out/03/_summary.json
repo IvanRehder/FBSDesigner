@@ -1,0 +1,8 @@
+{
+  "R01": "Autopilot parameter entry (ALT/HDG/SPD) via a multi-input panel—touch keypad, bezel OSS, and keyboard/rotary—gated by a single flight-envelope validation before CONFIRM.",
+  "R02": "Autopilot capture-complete confirmation delivered via a reusable multi-channel alert—persistent notification strip, R01-reused panel cue, and audio ping—to confirm the target reached and redirect pilot attention.",
+  "R03": "Autopilot arm→engage function implemented as a single dual-input (Touch/bezel) press-and-confirm AP MODE control on the reused R01 panel, with armed state persisting across modalities.",
+  "R04": "Deliberate autopilot disengagement returning manual control via a cross-modality (Touch/bezel) press-and-confirm toggle on the reused AP MODE control/multi-input panel.",
+  "R05": "Compose-and-transmit pilot-authored intel reports to C2 via a dedicated WAD overlay panel supporting interleaved touch/keyboard entry, a shared validation gate, and dual-confirm send.",
+  "R06": "Communicate Order to pilots—reusing the R02 alert framework plus a WAD list/detail panel (with HUD summary) backed by a single order store for notification, display, and persistence."
+}
