@@ -49,6 +49,36 @@
       "label": "F06.3",
       "requirement": "R06",
       "text": "Preserve/persist the order for later reference: keep each order available so the pilot can re-consult it after initial delivery, satisfied by the order details on the panel."
+    },
+    {
+      "label": "F07.1",
+      "requirement": "R07",
+      "text": "Auto-generate a surveillance-event report on trigger condition and transmit it to C2; the pilot arms and labels the trigger while dispatch is unattended and instant once conditions are met."
+    },
+    {
+      "label": "F08.3",
+      "requirement": "R08",
+      "text": "Convey with graded priority (triage): deliver system-generated messages while differentiating their operational importance, so the pilot's finite attention is correctly allocated between routine and safety-critical messages; the message's weight is communicated alongside its content."
+    },
+    {
+      "label": "F09.1",
+      "requirement": "R09",
+      "text": "Enable the pilot to issue a UAV takeover request, converting the pilot's intent into a valid, correctly-addressed takeover request directed at a target UAV for forwarding to the aircraft."
+    },
+    {
+      "label": "F09.3",
+      "requirement": "R09",
+      "text": "Enable the pilot to guard against erroneous takeover requests, ensuring a takeover request is deliberate since it interrupts another operator's control authority (validation/deliberateness gate, reusing the R03/R04/R05 confirmation system)."
+    },
+    {
+      "label": "F10.2",
+      "requirement": "R10",
+      "text": "Establish and confirm active UAV control — command the takeover and give the pilot assurance that the UAV is now under their authority (connection established + confirmation received)."
+    },
+    {
+      "label": "F11.1",
+      "requirement": "R11",
+      "text": "Enable pilot authoring/entry of new UAV flight parameter values (SPD/ALT/HDG); UAV-scoped twin of R01's function, same teleology with distinct target."
     }
   ],
   "Be": [
@@ -106,6 +136,61 @@
       "label": "Be06.3.1",
       "requirement": "R06",
       "text": "The system retains each stored order's full content and renders its details on demand (panel opened via out-of-scope input) on Screen, so an order remains re-consultable after its initial alert."
+    },
+    {
+      "label": "Be07.1.1",
+      "requirement": "R07",
+      "text": "Interleaved, non-modality-locked arm-and-manage behaviour: the pilot creates/edits/deletes triggers, enters title/description, sets monitored parameters, and arms the event — each sub-step completable by Touch or Keyboard and switchable mid-task. Monitoring is the system's internal job; on trigger conditions being met the report is auto-generated and transmitted to C2 instantly with no confirmation, followed by an output-only dispatch notification to the pilot."
+    },
+    {
+      "label": "Be08.3.3",
+      "requirement": "R08",
+      "text": "Mixed cross-channel reinforcement: priority governs channel count and insistence (routine = Screen only; elevated = Screen + single audio ping; critical = Screen modal banner + repeating audio/TTS), with a single acknowledgment clearing all channels. Established as the foundational output/feedback behaviour reused by downstream requirements (R02, R06, and all HMI-informs-pilot / acknowledgment steps)."
+    },
+    {
+      "label": "Be09.1.1",
+      "requirement": "R09",
+      "text": "Touch-only pathway: pilot taps the target UAV on a takeover panel/roster, taps a REQUEST TAKEOVER control; a confirm affordance appears (distinct second tap = F-09.3 deliberateness gate) before the request is committed and handed to the aircraft. Request transmitted only after two deliberate touch events on distinct affordances."
+    },
+    {
+      "label": "Be09.1.2",
+      "requirement": "R09",
+      "text": "Keyboard-only pathway: pilot selects target UAV via bezel OSS / rotary step (cycle roster) and issues REQUEST via a dedicated OSS; the gate is a second discrete press (CONFIRM OSS or OSS-hold) before commit. UCP alphanumeric can key a UAV ID directly as an alternate select. Full request completable with zero touch input; commit requires two distinct discrete actuations."
+    },
+    {
+      "label": "Be09.1.3",
+      "requirement": "R09",
+      "text": "Mixed pathway: pilot touch-selects the UAV then confirms via bezel CONFIRM OSS, or OSS-cycle selects and touch-confirms. Either modality can serve either sub-step (satisfies redundancy). Fast touch selection combined with a positive-feel physical CONFIRM OSS for the deliberate commit under vibration/glove conditions."
+    },
+    {
+      "label": "Be10.2.1",
+      "requirement": "R10",
+      "text": "Touch-only pathway. Pilot taps the COMMAND TAKEOVER control on the acknowledged/armed takeover panel, using a tap-to-select then tap-to-CONFIRM dual gate. System renders connection progress (requesting -> authorized -> established) on the panel; on established, a confirmation cue appears on the notification strip. Fully completable by touch alone: command committed in <=2 touch actions; connection-state transitions visible <=1s after each aircraft ack."
+    },
+    {
+      "label": "Be10.2.2",
+      "requirement": "R10",
+      "text": "Keyboard-only pathway. Pilot uses bezel OSS (or UCP) to select the COMMAND TAKEOVER function and a second discrete press to CONFIRM. Same progress rendering and confirmation cue. Fully completable via bezel/keyboard alone with no touch required: command committed via 2 discrete key/OSS presses; same state-visibility criteria."
+    },
+    {
+      "label": "Be10.2.3",
+      "requirement": "R10",
+      "text": "Mixed pathway. Pilot selects via Touch and confirms via bezel OSS (or vice versa), adding value in high-vibration/turbulence where touch precision degrades: select on WAD but commit on a physical detented button. State is shared so either modality reflects the same armed/committed status; any select-modality + any confirm-modality combination reaches committed state identically."
+    },
+    {
+      "label": "Be11.1.1",
+      "requirement": "R11",
+      "text": "Touch-only: Pilot opens the UAV param panel on WAD, taps a field (SPD/ALT/HDG) to focus it, enters the value via an on-screen touch keypad, and taps CONFIRM. Envelope validation gates CONFIRM. All three fields settable by touch alone."
+    },
+    {
+      "label": "Be11.1.2",
+      "requirement": "R11",
+      "text": "Keyboard-only: Pilot selects the target field via bezel OSS or UCP, enters/steps the value via UCP alphanumeric keyboard or bezel rotary, and confirms via a dedicated CONFIRM OSS. Full task completable on bezel/UCP alone without touch."
+    },
+    {
+      "label": "Be11.1.3",
+      "requirement": "R11",
+      "text": "Mixed: Pilot touches a field to focus it for fast target acquisition, types the value on the UCP keyboard for precise numeric entry under vibration, and confirms via either touch or OSS. Combines touch for spatial selection with keyboard for stable digit entry."
     }
   ],
   "S": [
@@ -168,6 +253,51 @@
       "label": "S06.3.1.1",
       "requirement": "R06",
       "text": "Order Details view (WAD, Screen): selecting a list row renders the order's full content; shares the stored-order data with the Order List (one panel, list-detail states, one order store)."
+    },
+    {
+      "label": "S07.1.1.2",
+      "requirement": "R07",
+      "text": "R06 list/detail pattern backed by a single trigger store; create/edit/delete triggers via Touch or bezel OSS (interleaved, switchable); title/description via Touch keypad or UCP with shared buffer; parameter-condition via Touch value widget or rotary/OSS; arm-time validation gate as the sole gate (reused R01/R05); ARM press-and-confirm toggle with persistent armed-state (R03 pattern); internal monitoring triggers instant unattended transmit to C2 (R05 transmit plumbing); dispatch notification via R02/R06 alert framework (output-only, replacing send-time confirmation)."
+    },
+    {
+      "label": "S08.3.3.2",
+      "requirement": "R08",
+      "text": "Distributed-by-criticality structure across WAD + HUD. Elements: (1) WAD notification strip in a fixed persistent region rendering three visual tiers — routine (transient, auto-dismiss ~5s), elevated (held until read), critical (expands to high-contrast modal banner, blocks until acknowledged); (2) message store backing the strip so messages persist and can be re-reviewed; (3) HUD forward-view banner mirroring the critical tier only, so a head-out pilot sees critical messages without returning to WAD; (4) per-tier audio channel mapping — routine silent, elevated single ping, critical repeating tone + TTS; (5) single Acknowledge control (WAD touch on banner or bezel OSS) that clears WAD + HUD + audio together. Serves as the foundational output/feedback backbone whose notification strip and message store are reused by R02, R06, and all acknowledgment-feedback steps."
+    },
+    {
+      "label": "S09.1.3.1",
+      "requirement": "R09",
+      "text": "Single WAD takeover panel with a roster of teamed UAVs (tail/ID, controlling operator, status), with both input rails live: touch-select on rows and rotary-knob/OSS-select; REQUEST TAKEOVER available as both a touch button and a bezel REQUEST OSS; commit via the reused R03/R04/R05 dual-input press-and-confirm control (CONFIRM/CANCEL). Serves Touch-only (Be-09.1.1), Keyboard-only (Be-09.1.2), and Mixed (Be-09.1.3) behaviours simultaneously."
+    },
+    {
+      "label": "S10.2.1.1",
+      "requirement": "R10",
+      "text": "R09 takeover-panel overlay extended with a COMMAND TAKEOVER second-phase state serving the Touch-only pathway (Be-10.2.1): WAD tap-to-select + tap-to-confirm dual gate, in-panel connection-progress indicator (requesting→authorized→established), and established-confirmation via reused R08 notification strip + R02-style audio ping."
+    },
+    {
+      "label": "S10.2.2.1",
+      "requirement": "R10",
+      "text": "R09 takeover-panel overlay extended with a COMMAND TAKEOVER second-phase state serving the Keyboard-only pathway (Be-10.2.2): bezel OSS discrete select + confirm presses, in-panel connection-progress indicator (requesting→authorized→established), and established-confirmation via reused R08 notification strip + R02-style audio ping."
+    },
+    {
+      "label": "S10.2.3.1",
+      "requirement": "R10",
+      "text": "R09 takeover-panel overlay extended with a COMMAND TAKEOVER second-phase state serving the Mixed pathway (Be-10.2.3): any-modality select (Touch or bezel OSS) with any-modality confirm for turbulence resilience, shared armed/committed state, in-panel connection-progress indicator (requesting→authorized→established), and established-confirmation via reused R08 notification strip + R02-style audio ping."
+    },
+    {
+      "label": "S11.1.1.1",
+      "requirement": "R11",
+      "text": "Dedicated UAV PARAMS panel instance on WAD, layout cloned from R01's AP panel: three labeled fields SPD/ALT/HDG (tap-to-focus), on-screen touch keypad for numeric entry, and CONFIRM button gated by envelope validation. Rendered as a distinct overlay co-displayable with R01's ownship AP panel so both can be authored simultaneously. Serves Be-11.1.1 (Touch-only) fully and Be-11.1.3 (focus by touch)."
+    },
+    {
+      "label": "S11.1.2.1",
+      "requirement": "R11",
+      "text": "Bezel/UCP control set bound to the UAV PARAMS panel focus: bezel OSS row for field-select (step SPD/ALT/HDG) plus CONFIRM OSS, bezel rotary for value stepping, and UCP alphanumeric keyboard for direct numeric entry. Shared physical hardware (also serving R01) context-bound to this panel; the panel renders focused field/value state so bezel/keyboard edits are visible. Serves Be-11.1.2 (Keyboard-only) fully and Be-11.1.3 (value entry)."
+    },
+    {
+      "label": "S11.1.3.1",
+      "requirement": "R11",
+      "text": "Separate UAV-param state model backing both touch and bezel/UCP surfaces (any modality reads/writes the same focused field and pending values), distinct from ownship AP state so ownship and UAV setpoints can hold pending values concurrently. Includes reused envelope-validation gate (R01 pattern) evaluating all three fields before enabling CONFIRM, and a reused ack/confirmation indicator (R02/F-11.3 framework) on the panel showing UAV acknowledgment (accepted/applied)."
     }
   ]
 }
