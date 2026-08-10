@@ -1,0 +1,16 @@
+{
+  "code": "R11",
+  "name_en": "Input New UAV Parameters",
+  "type": "input",
+  "modalities": [
+    "Touch",
+    "Keyboard"
+  ],
+  "closed_at": 1786384794.8037398,
+  "function": "F-11.1 — Enable pilot authoring/entry of new UAV flight parameter values (SPD/ALT/HDG); UAV-scoped twin of R01's function, same teleology with a distinct target (the UAV rather than ownship autopilot).",
+  "function_summary": "UAV flight parameter authoring (SPD/ALT/HDG) — UAV-scoped twin of R01",
+  "behaviour": "Be-11.1.1 (Touch-only): Pilot opens the UAV param panel on WAD, taps a field (SPD/ALT/HDG) to focus it, enters the value via an on-screen touch keypad, and taps CONFIRM (gated by envelope validation). Be-11.1.2 (Keyboard-only): Pilot selects the target field via bezel OSS or UCP, enters/steps the value via UCP alphanumeric keyboard or bezel rotary, and confirms via a dedicated CONFIRM OSS. Be-11.1.3 (Mixed): Pilot touches a field to focus it, types the value on the UCP keyboard, and confirms via touch or OSS. Together the three provide modality-complete redundancy; validation (F-11.2) and UAV ack (F-11.3) are reused behaviours referenced at CONFIRM and step 5.2.7.",
+  "behaviour_summary": "Multi-modal UAV parameter entry with envelope-validated confirmation",
+  "structure": "S-11.1 — R01 structure pattern re-instantiated as a separate, concurrently-displayable UAV PARAMS panel with its own state. New WAD overlay panel instance (SPD/ALT/HDG fields, on-screen touch keypad, CONFIRM button), layout cloned from R01's AP panel and co-displayable so ownship and UAV authoring run in parallel; own UAV-param state model distinct from ownship AP state. Reused as same instances: envelope-validation gate, R02 ack/confirmation framework, and shared bezel OSS/rotary + UCP alphanumeric keyboard hardware, context-bound to this panel's focus.",
+  "structure_summary": "Concurrent UAV PARAMS panel cloned from R01 AP layout."
+}

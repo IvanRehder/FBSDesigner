@@ -4,5 +4,10 @@
   "R03": "Autopilot arm→engage function implemented as a single dual-input (Touch/bezel) press-and-confirm AP MODE control on the reused R01 panel, with armed state persisting across modalities.",
   "R04": "Deliberate autopilot disengagement returning manual control via a cross-modality (Touch/bezel) press-and-confirm toggle on the reused AP MODE control/multi-input panel.",
   "R05": "Compose-and-transmit pilot-authored intel reports to C2 via a dedicated WAD overlay panel supporting interleaved touch/keyboard entry, a shared validation gate, and dual-confirm send.",
-  "R06": "Communicate Order to pilots—reusing the R02 alert framework plus a WAD list/detail panel (with HUD summary) backed by a single order store for notification, display, and persistence."
+  "R06": "Communicate Order to pilots—reusing the R02 alert framework plus a WAD list/detail panel (with HUD summary) backed by a single order store for notification, display, and persistence.",
+  "R07": "Pilot pre-arms surveillance triggers via a multimodal (touch/keyboard) list/editor with a single arm-time validation gate, after which the system autonomously assembles and dispatches reports to C2 on trigger-fire.",
+  "R08": "Delivers priority-graded system messages via a criticality-tiered notification strip distributed across WAD and HUD with synchronized single-acknowledgment clearing and redundant multi-channel critical alerts.",
+  "R09": "A single WAD takeover-panel overlay issues deliberate, validated UAV takeover requests via fully redundant touch/keyboard selection plus a reused dual-input confirm gate.",
+  "R10": "R10 establishes and confirms active UAV control via a dual-input (touch/keyboard/mixed) press-and-confirm gate, reusing the R09 takeover panel extended with a second-phase COMMAND TAKEOVER state and connection-progress indicator.",
+  "R11": "Multi-modal UAV flight-parameter (SPD/ALT/HDG) entry with envelope-validated confirmation, delivered via a separate concurrently-displayable UAV PARAMS panel cloned from R01's ownship AP layout with its own state."
 }
