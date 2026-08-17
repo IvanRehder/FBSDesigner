@@ -1,0 +1,16 @@
+{
+  "code": "R16",
+  "name_en": "Expose ISR Sensor Data",
+  "type": "input",
+  "modalities": [
+    "Touch",
+    "Keyboard"
+  ],
+  "closed_at": 1786986454.5176148,
+  "function": "F-16.2 — Persistent ISR monitoring surface: Provide a durable, always-available viewing surface for ISR sensor data that the pilot can keep in the scan without re-requesting, supporting sustained surveillance monitoring. Reuses R12's docked-pane framework (cloned from R11's UAV PARAMS layout), with ISR sensor data as another dockable content source.",
+  "function_summary": "Always-on docked pane for continuous ISR sensor feeds",
+  "behaviour": "Be-16.2.1 (Touch-only): Pilot taps a UAV/ISR source on the WAD map to open/dock the ISR feed pane; the pane's pin/close toggle controls its persistence — full invoke-and-keep by touch alone. Be-16.2.2 (Keyboard-only): Pilot invokes the ISR pane via a bezel OSS ('ISR FEED' soft-key), steps through available UAV sources via rotary/OSS, and pins the pane open — no touch needed. Be-16.2.3 (Mixed): natural combined operating mode (bezel OSS invoke + touch source selection/positioning + either modality to pin), not a separate requirement-satisfier. Both Touch and Keyboard pathways are modality-complete and stand alone.",
+  "behaviour_summary": "Multimodal ISR feed pane invocation, source selection, and pinning.",
+  "structure": "S-16.2.2 — Dedicated ISR MONITOR pane cloned from R12's docked-pane layout with its own independent state, co-displayable alongside the R12 status pane using the same 8-layer stacking/tiling logic. Dual invoke: map-tap on UAV icon (Touch) or bezel 'ISR FEED' OSS + rotary source selection (Keyboard). Pin/close controls provide persistence. Pane renders the live ISR product (video/imagery) with a source-ID header. Follows the R11→R12 clone-with-own-state precedent, allowing ISR feed and UAV status to remain visible simultaneously.",
+  "structure_summary": "Independent ISR feed pane, dual-invoke, co-displayable with status."
+}

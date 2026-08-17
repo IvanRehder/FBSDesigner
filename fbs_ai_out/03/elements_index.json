@@ -79,6 +79,51 @@
       "label": "F11.1",
       "requirement": "R11",
       "text": "Enable pilot authoring/entry of new UAV flight parameter values (SPD/ALT/HDG); UAV-scoped twin of R01's function, same teleology with distinct target."
+    },
+    {
+      "label": "F12.1",
+      "requirement": "R12",
+      "text": "On-demand-invoked, continuously-updating UAV status exposure: expose a UAV's current status on pilot request and keep it current while exposed."
+    },
+    {
+      "label": "F13.2",
+      "requirement": "R13",
+      "text": "Signal UAV status changes/transitions (event-driven, output-only via Screen and Audio-out): draw pilot attention on a UAV status delta (mode transition, link degrade/restore, health change, tracking lock acquired/lost); complements R12's on-demand values by signalling when the state changed."
+    },
+    {
+      "label": "F14.1",
+      "requirement": "R14",
+      "text": "Designate a sensor aim-point. Convert a pilot-chosen POI/AOI (via head/gaze or touch) into a sensor slew-and-hold command. Continuous manual steering deferred out-of-scope for this modality pair."
+    },
+    {
+      "label": "F15.2",
+      "requirement": "R15",
+      "text": "Parametric pattern specification: let the pilot select and dimension a named pattern type (e.g. raster/ladder, spiral, sector) with its defining parameters (leg spacing, orientation, extent). Pattern-archetype-first, not area-first."
+    },
+    {
+      "label": "F16.2",
+      "requirement": "R16",
+      "text": "Persistent ISR monitoring surface: provide a durable, always-available viewing surface for ISR sensor data that the pilot can keep in the scan without re-requesting, reusing R12's docked-pane framework."
+    },
+    {
+      "label": "F17.1",
+      "requirement": "R17",
+      "text": "Target designation-to-track function: convert a pilot-identified target of interest into a validated tracking command sent to the UAV, turning an identified target into an actionable, confirmed track order."
+    },
+    {
+      "label": "F18.1",
+      "requirement": "R18",
+      "text": "Specify a numeric standoff distance to the tracked TOI: the pilot inputs a discrete distance value that becomes the UAV's commanded range from the target, with the current range displayed as context so absolute entry doubles as an informed relative adjustment."
+    },
+    {
+      "label": "F19.1",
+      "requirement": "R19",
+      "text": "Issue a deliberate, validated handover request for a selected UAV (mirror of R09, reversed direction)."
+    },
+    {
+      "label": "F20.1",
+      "requirement": "R20",
+      "text": "Execute confirmed control transfer: commit the handover by relinquishing the pilot's active control link so the UAV Pilot regains authority — the inverse of R10 (establish control), paired with R19 (request)."
     }
   ],
   "Be": [
@@ -191,6 +236,111 @@
       "label": "Be11.1.3",
       "requirement": "R11",
       "text": "Mixed: Pilot touches a field to focus it for fast target acquisition, types the value on the UCP keyboard for precise numeric entry under vibration, and confirms via either touch or OSS. Combines touch for spatial selection with keyboard for stable digit entry."
+    },
+    {
+      "label": "Be12.1.3",
+      "requirement": "R12",
+      "text": "Mixed selection-invoked, continuously-updating status panel: pilot selects a UAV (WAD touch or TDC cursor) to invoke its live status panel; panel renders and refreshes continuously on Screen; dismiss via either Touch pathway."
+    },
+    {
+      "label": "Be13.2.3",
+      "requirement": "R13",
+      "text": "Mixed synchronized cue for UAV status transitions: on a detected status delta, both channels fire together, criticality-graded. Low-severity deltas produce a silent visual marker; high-severity deltas produce an audio earcon/TTS plus a persistent visual marker on WAD/HUD. Redundancy-complete across Screen and Audio-out so the pilot catches the event whether looking at the display or not."
+    },
+    {
+      "label": "Be14.14.1",
+      "requirement": "R14",
+      "text": "Touch-only: Pilot taps the POI or drags a box for an AOI directly on the WAD Map view; a designation marker drops at the tapped point, pilot confirms, and the system issues the slew command. Full task completable on Touch alone, with drag-to-refine before confirm."
+    },
+    {
+      "label": "Be14.14.2",
+      "requirement": "R14",
+      "text": "HMD-only: Pilot's HMD reticle (head-vector with eye-tracked refinement) sits on the target in the visor overlay; a dwell or discrete confirm freezes the designation and issues the slew, setting the sensor aim-point by where the pilot is looking. Strong when hands are on HOTAS."
+    },
+    {
+      "label": "Be14.14.3",
+      "requirement": "R14",
+      "text": "Mixed: HMD head/gaze provides fast coarse cueing to get the reticle into the neighborhood, then Touch on the WAD refines the exact point and commits the confirm, combining gaze speed with touch precision for accuracy-under-time."
+    },
+    {
+      "label": "Be15.2.1",
+      "requirement": "R15",
+      "text": "Touch-only: pilot taps a pattern-type tile (raster/spiral/sector) from a WAD palette; the selected pattern renders a live preview overlay on the map with draggable handles for orientation, extent, and leg spacing (TDC cursor as throttle-resident equivalent). Numeric values shown read-only while dragging; confirm via on-screen CONFIRM."
+    },
+    {
+      "label": "Be15.2.2",
+      "requirement": "R15",
+      "text": "Keyboard-only: pilot steps through pattern-type via bezel OSS (or rotary cycle), then enters each parameter as an explicit value (leg spacing, orientation heading, extent length/width or radius) on the UCP alphanumeric keypad/rotary encoders. Field focus advances by OSS; CONFIRM via bezel OSS. Fully hands-on-panel, no pointing required."
+    },
+    {
+      "label": "Be15.2.3",
+      "requirement": "R15",
+      "text": "Mixed: pilot taps the pattern tile and coarse-drags extent/orientation on the map for fast spatial framing, then keys exact numeric values (spacing, heading) on the UCP for precision. Preview updates from whichever input last touched a field; single shared validation gate before CONFIRM. Optional value-add path, not required for task completion."
+    },
+    {
+      "label": "Be16.2.1",
+      "requirement": "R16",
+      "text": "Touch-only invoke-and-pin: pilot taps a UAV/ISR source on the WAD map to open/dock the ISR monitoring pane, and toggles the pane's pin/close to control its persistence. Fully achievable by touch alone."
+    },
+    {
+      "label": "Be16.2.2",
+      "requirement": "R16",
+      "text": "Keyboard-only invoke-and-pin: pilot invokes the ISR monitoring pane via a bezel ISR FEED soft-key (OSS), steps through available UAV sources with the rotary, and pins the pane open or closes it via OSS. No touch required."
+    },
+    {
+      "label": "Be16.2.3",
+      "requirement": "R16",
+      "text": "Mixed combined mode: bezel OSS invokes the pane, touch selects/repositions the ISR source on the map, and either modality pins persistence. Natural combined operating mode, adding value when map-based source scoping is used alongside invocation."
+    },
+    {
+      "label": "Be17.1.1",
+      "requirement": "R17",
+      "text": "Touch-only: Pilot taps the TOI directly on the map/sensor-feed (or rate-points via TDC cursor), producing a designation marker; a confirm-gated TRACK action (touch CONFIRM) validates the target is trackable and issues the track command. Full task completable by touch alone."
+    },
+    {
+      "label": "Be17.1.2",
+      "requirement": "R17",
+      "text": "Keyboard-only: Pilot enters/selects the target by identifier or coordinates via UCP alphanumeric plus bezel OSS stepping through a candidate/contact list, then bezel CONFIRM issues the track command. No pointing device required; suited to known catalogued contacts or hands-off-pointing conditions."
+    },
+    {
+      "label": "Be17.1.3",
+      "requirement": "R17",
+      "text": "Mixed: Touch/TDC designates the point on the map, keyboard/OSS refines or overrides (snap to a listed contact, adjust the designation) and confirms. Spatial pick handles 'that one' fastest while keyboard disambiguates clustered contacts near the tap."
+    },
+    {
+      "label": "Be18.1.1",
+      "requirement": "R18",
+      "text": "Keyboard-only: current range shown as a live readout; pilot enters a new standoff distance via UCP alphanumeric keypad or steps the value up/down from the displayed current value using a bezel rotary; envelope validation (min/max standoff) gates a CONFIRM before the distance-only command is sent, with rotary-stepping-from-current enabling effortless relative trim without a separate function."
+    },
+    {
+      "label": "Be18.1.2",
+      "requirement": "R18",
+      "text": "Touch-only: current range shown as a live readout; pilot taps the distance field to raise an on-screen numeric keypad, or uses touch +/- stepper buttons anchored to the current value, then taps CONFIRM; steppers give trim-from-current ease via Touch with the same envelope-validation and distance-only confirm semantics."
+    },
+    {
+      "label": "Be18.1.3",
+      "requirement": "R18",
+      "text": "Mixed: interleaved input where touch selects the distance field, keyboard/rotary enters or steps the value, and either modality commits CONFIRM; allows the pilot to start on one modality and commit on another mid-task (hands-on-throttle contingency), matching the R01/R11 multi-input pattern, over one shared validation gate and distance-only confirm."
+    },
+    {
+      "label": "Be19.1.1",
+      "requirement": "R19",
+      "text": "Fully redundant Touch/Keyboard target selection followed by a reused dual-input confirm gate before handover request dispatch. Either modality alone completes the full task; no sub-step is modality-locked."
+    },
+    {
+      "label": "Be20.1.1",
+      "requirement": "R20",
+      "text": "Touch-only: On the R19 handover-panel overlay in its second-phase COMMAND HANDOVER state, the pilot taps COMMAND HANDOVER then taps a confirm affordance to pass the dual-input gate; the system breaks the control link, shows a connection-teardown progress indicator, and displays a completion confirmation."
+    },
+    {
+      "label": "Be20.1.2",
+      "requirement": "R20",
+      "text": "Keyboard-only: On the same handover panel, the pilot selects COMMAND HANDOVER via bezel OSS/UCP and satisfies the confirm gate with a second discrete press (bezel or UCP); teardown progress and completion are shown via the same indicator and confirmation."
+    },
+    {
+      "label": "Be20.1.3",
+      "requirement": "R20",
+      "text": "Mixed: Select via Touch and confirm via bezel (or vice versa), the dual-input gate accepting any modality on either step per the redundancy rule, supporting the hands-occupied path with the same teardown-progress and completion feedback."
     }
   ],
   "S": [
@@ -298,6 +448,76 @@
       "label": "S11.1.3.1",
       "requirement": "R11",
       "text": "Separate UAV-param state model backing both touch and bezel/UCP surfaces (any modality reads/writes the same focused field and pending values), distinct from ownship AP state so ownship and UAV setpoints can hold pending values concurrently. Includes reused envelope-validation gate (R01 pattern) evaluating all three fields before enabling CONFIRM, and a reused ack/confirmation indicator (R02/F-11.3 framework) on the panel showing UAV acknowledgment (accepted/applied)."
+    },
+    {
+      "label": "S12.1.3.1",
+      "requirement": "R12",
+      "text": "Map-selected, R11-cloned docked status pane. Reused Map view serves as the selection surface: UAV icons are touch/TDC-selectable targets (redundant Touch pathways). Selecting a UAV icon opens/binds a docked UAV STATUS pane — a tiled WAD pane structurally cloned from R11's UAV PARAMS layout (same field grid, rendered read-only) with its own live-updating state reflecting the selected UAV. The pane continuously refreshes while open; selecting another icon re-targets it; deselect or a close affordance (touch target or bezel OSS) dismisses. Reuses Map view and R11 UAV PARAMS layout (read-only clone); shared status-output surface to be consolidated with R11 and R4.2.2 post-takeover monitoring at integration."
+    },
+    {
+      "label": "S13.2.3.3",
+      "requirement": "R13",
+      "text": "Hybrid delivery structure: a single change-detector on the R12 UAV status store drives two surfaces. High-tier UAV status deltas produce an R08 tiered notification strip entry (WAD + HUD) plus R08 audio (earcon/TTS for attention and acknowledgment) and also latch the changed-field highlight on the R12 docked status pane for detail-in-context; low-tier deltas produce only the R12 pane changed-field highlight, silent, with no strip entry. Audio is owned solely by the R08 framework via a new UAV-STATUS message-class, avoiding competing tone sets; detail highlight reuses the R12 pane. Reuses R08 audio/attention framework and R12 detail pane; the only new logical component is the delta change-detector."
+    },
+    {
+      "label": "S14.1.1",
+      "requirement": "R14",
+      "text": "Map-embedded designation (Touch path): WAD Map view with tap-to-drop POI / drag-box AOI, a SENSOR AIM designation overlay layer, a Touch/bezel CONFIRM SLEW gate (R09/R10 confirm pattern), and in-pane slew-progress + ack indicator (R12 pattern). Independently sufficient - carries requirement-level modality completeness."
+    },
+    {
+      "label": "S14.2.2",
+      "requirement": "R14",
+      "text": "In-visor reticle + discrete-confirm (HMD-assisted path): HMD head-slaved aiming reticle with eye-tracked fine offset and in-visor slew/ack cue; commit via bezel OSS or single WAD tap. HMD-assisted, not HMD-alone-complete - accepted deviation from strict per-pathway redundancy."
+    },
+    {
+      "label": "S15.2.1.3",
+      "requirement": "R15",
+      "text": "Hybrid docked form + linked map preview for Touch-only pattern definition (Be-15.2.1): R11-family docked PATTERN panel linked live to an R14-surface map preview overlay editing one shared pattern object; pattern-type palette tiles (raster/spiral/sector), map drag-handles/TDC for orientation/extent/spacing, single validation gate + dual-input CONFIRM."
+    },
+    {
+      "label": "S15.2.2.3",
+      "requirement": "R15",
+      "text": "Hybrid docked form + linked map preview for Keyboard-only pattern definition (Be-15.2.2): docked PATTERN panel with pattern-type selector row and numeric fields (spacing, heading, extent) driven by bezel-OSS focus-step and UCP/rotary keying, linked live to map preview overlay, single validation gate + dual-input CONFIRM."
+    },
+    {
+      "label": "S15.2.3.3",
+      "requirement": "R15",
+      "text": "Hybrid docked form + linked map preview for Mixed pattern definition (Be-15.2.3): docked PATTERN panel for precise numeric keying linked live to map preview overlay for coarse spatial drag framing; either surface edits the same pattern object with last-touched sync, single shared validation gate + dual-input CONFIRM."
+    },
+    {
+      "label": "S16.2.2.2",
+      "requirement": "R16",
+      "text": "Dedicated ISR MONITOR pane cloned from R12's docked-pane layout with its own independent state, co-displayable alongside the R12 status pane using the same 8-layer stacking/tiling logic. Renders the live ISR sensor product plus a source-ID header. Invoked via map-tap on the UAV icon (Touch-only path, Be-16.2.1) or via bezel ISR FEED OSS with rotary source stepping (Keyboard-only path, Be-16.2.2); pin/close controls provide persistence. Follows the R11->R12 clone-with-own-state precedent so ISR feed and UAV status can be monitored simultaneously."
+    },
+    {
+      "label": "S17.1.3.3",
+      "requirement": "R17",
+      "text": "Unified TOI panel: single WAD overlay combining a map/feed designation surface (reusing R14's designation primitive with a distinct target-reticle marker) and a bezel/UCP-navigable contact list (ID, bearing, range; direct ID or lat/long entry), sharing one TRACK TOI dual-input confirm gate (R09/R10 lineage) with pre-confirm trackability validation; selected contact cross-highlights its map marker for the Mixed pathway; confirmation return-path routed through R08's notification strip and audio ping. Realizes Be-17.1.1 (Touch-only), Be-17.1.2 (Keyboard-only), and Be-17.1.3 (Mixed) in one coherent tasking surface."
+    },
+    {
+      "label": "S18.1.1.1",
+      "requirement": "R18",
+      "text": "Keyboard-only pathway (Be-18.1.1) hosted on a DISTANCE row embedded in the R17 TOI panel: current+actual range live readout, editable distance field driven by UCP alphanumeric keypad and bezel rotary (step-from-current), envelope-validation gate, and an independent distance-only CONFIRM that issues a standalone distance-update command against the already-tracked TOI while tracking is active, without re-triggering R17's track/designation gate."
+    },
+    {
+      "label": "S18.1.2.1",
+      "requirement": "R18",
+      "text": "Touch-only pathway (Be-18.1.2) hosted on a DISTANCE row embedded in the R17 TOI panel: current+actual range live readout, distance field that raises an on-screen numeric keypad on tap plus touch +/- steppers bound to step-from-current, envelope-validation gate, and an independent touch CONFIRM that issues a standalone distance-update command against the already-tracked TOI while tracking is active, without re-triggering R17's track/designation gate."
+    },
+    {
+      "label": "S18.1.3.1",
+      "requirement": "R18",
+      "text": "Mixed pathway (Be-18.1.3) hosted on a DISTANCE row embedded in the R17 TOI panel: current+actual range live readout, distance field editable by interleaved input (touch to select, keyboard/rotary/steppers to enter or step the value from current), shared envelope-validation gate, and an independent distance-only CONFIRM committable from either modality that issues a standalone distance-update command against the already-tracked TOI while tracking is active, without re-triggering R17's track/designation gate."
+    },
+    {
+      "label": "S19.1.1.1",
+      "requirement": "R19",
+      "text": "A WAD handover-panel overlay, sibling to the R09 takeover panel: touch-selectable UAV target control plus bezel/keyboard equivalent, and the shared dual-input press-and-confirm gate (pattern reused from R03/R04/R09/R10). Cloned as an independent panel with its own state; selection and confirm-gate patterns reused, live state not shared with the takeover panel."
+    },
+    {
+      "label": "S20.1.1.1",
+      "requirement": "R20",
+      "text": "Second-phase COMMAND HANDOVER state on the reused R19 handover-panel overlay, unlocked once the request-ack (R19/UC8.1) arrives. Elements: COMMAND HANDOVER control (Touch target + mapped bezel OSS), shared dual-input confirm gate (reused from R09/R10/R17/R19), and a connection-teardown progress indicator (inverse of R10's connection-progress). On completion: R12 UAV status pane and R16 ISR pane retire (hide status), completion confirmation via R08 notification strip; UCP available for the confirm press. Serves Be-20.1.1 (Touch), Be-20.1.2 (Keyboard), and Be-20.1.3 (Mixed) via modality-agnostic gate."
     }
   ]
 }

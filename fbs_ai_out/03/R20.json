@@ -1,0 +1,16 @@
+{
+  "code": "R20",
+  "name_en": "Command Handover",
+  "type": "input",
+  "modalities": [
+    "Touch",
+    "Keyboard"
+  ],
+  "closed_at": 1786987599.45564,
+  "function": "F-20.1 — Execute confirmed control transfer. The function is to commit the handover: relinquish the pilot's active control link to the UAV so the UAV Pilot regains authority, terminating the ownship's command relationship with that UAV. It is the command/execution phase mirroring R10 (establish control) inverted, and pairs with R19 (request) as R10 pairs with R09.",
+  "function_summary": "Relinquish UAV control to complete confirmed handover.",
+  "behaviour": "Be-20.1.1 (Touch-only): On the R19 handover-panel overlay in its second-phase COMMAND HANDOVER state (unlocked after the request-ack), pilot taps COMMAND HANDOVER then taps a confirm affordance to pass the dual-input gate; system breaks the link, shows a connection-teardown progress indicator, then a completion confirmation. Be-20.1.2 (Keyboard-only): Same panel driven by bezel OSS / UCP — OSS selects COMMAND HANDOVER, a second discrete press satisfies the confirm gate, with teardown progress and completion via the same indicator. Be-20.1.3 (Mixed): Select via one modality and confirm via the other (Touch↔bezel/UCP), the gate accepting any modality on either step per the redundancy rule, as the hands-occupied path. All three form the redundancy set.",
+  "behaviour_summary": "Confirm-gated command handover with teardown, any input modality.",
+  "structure": "S-20.1.1 — Second-phase COMMAND HANDOVER state on the reused R19 handover-panel overlay (direct inverse of R10). Elements: COMMAND HANDOVER control (Touch target + mapped bezel OSS), shared dual-input confirm gate (reused from R09/R10/R17/R19), connection-teardown progress indicator (replacing R10's connection-progress indicator), UCP available for the confirm press. On completion: R12 UAV status pane and R16 ISR pane retire (UC8.1.16 hide status) and completion confirmation is shown via the R08 notification strip. Shared elements (confirm gate, R08 strip, R12/R16 panes) are reused, not duplicated.",
+  "structure_summary": "Command Handover teardown state on reused R19 handover-panel overlay."
+}

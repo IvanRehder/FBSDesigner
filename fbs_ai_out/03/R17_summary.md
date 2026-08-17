@@ -1,0 +1,12 @@
+# R17 — Command Track Target of Interest (TOI) (input)
+
+**Modalities:** Touch and Keyboard
+
+## Function
+F-17.1 — Target designation-to-track function: convert a pilot-identified target of interest into a validated tracking command sent to the UAV (turn 'that thing there' into an actionable, confirmed track order centering ISR sensors on the TOI).
+
+## Behaviour
+Be-17.1.1 (Touch-only): pilot taps the TOI on the map/sensor-feed or rate-points via TDC to drop a designation marker, then a confirm-gated TRACK action issues the command. Be-17.1.2 (Keyboard-only): pilot enters/selects the target by identifier or coordinates via UCP alphanumeric and bezel OSS stepping through a candidate/contact list, then bezel CONFIRM issues the track command. Be-17.1.3 (Mixed): touch/TDC designates the point while keyboard/OSS refines or overrides (snap to a listed contact, disambiguate clustered contacts) and confirms — primary pathway. Confirm-gate reuses R09/R10 dual-input CONFIRM pattern; designation primitive reuses R14.
+
+## Structure
+S-17.1.3 — Unified TOI panel: a single WAD overlay combining (a) a map/feed designation surface reusing R14's designation primitive with a distinct target-reticle marker (vs R14 aim crosshair), touch-tap or TDC rate-cursor placement; (b) a bezel rotary/OSS-navigable and UCP-alphanumeric contact list (ID, bearing, range; direct ID or lat/long entry) whose selection cross-highlights the map marker; both sharing one TRACK TOI dual-input press-and-confirm gate (R09/R10 lineage) with pre-confirm trackability/envelope validation. Confirmation return-path (7.1.7–7.1.10) routed through R08 notification strip + audio ping. Co-resident with R14/R16 panes. Fallback: separate S-17.1.1 (designation+confirm) and S-17.1.2 (contact-list selector) panels if WAD space is contested.
