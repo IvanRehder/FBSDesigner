@@ -9,5 +9,14 @@
   "R08": "Delivers priority-graded system messages via a criticality-tiered notification strip distributed across WAD and HUD with synchronized single-acknowledgment clearing and redundant multi-channel critical alerts.",
   "R09": "A single WAD takeover-panel overlay issues deliberate, validated UAV takeover requests via fully redundant touch/keyboard selection plus a reused dual-input confirm gate.",
   "R10": "R10 establishes and confirms active UAV control via a dual-input (touch/keyboard/mixed) press-and-confirm gate, reusing the R09 takeover panel extended with a second-phase COMMAND TAKEOVER state and connection-progress indicator.",
-  "R11": "Multi-modal UAV flight-parameter (SPD/ALT/HDG) entry with envelope-validated confirmation, delivered via a separate concurrently-displayable UAV PARAMS panel cloned from R01's ownship AP layout with its own state."
+  "R11": "Multi-modal UAV flight-parameter (SPD/ALT/HDG) entry with envelope-validated confirmation, delivered via a separate concurrently-displayable UAV PARAMS panel cloned from R01's ownship AP layout with its own state.",
+  "R12": "On-demand live UAV status display achieved via a map-selectable, docked status pane cloned from R11's UAV PARAMS layout.",
+  "R13": "Alerts pilots to UAV status changes using a single change-detector on the R12 status store that routes high-severity deltas to R08's audio+notification strip and low-severity ones to R12's in-pane visual highlights.",
+  "R14": "Sensor aim-point designation via gaze/touch, implemented as a Touch-complete map-tap/drag-box designation with confirm-gated slew, supplemented by an HMD-assisted head/eye reticle.",
+  "R15": "R15 lets pilots select and dimension a named search pattern (raster/spiral/sector) via a hybrid design pairing a docked multi-input parametric panel with a synced editable map-preview overlay.",
+  "R16": "Provides an always-on, multimodally-invocable ISR sensor feed by cloning R12's docked-pane framework into an independent-state ISR MONITOR pane that's co-displayable with the UAV status pane.",
+  "R17": "R17 converts a pilot-designated target into a confirmed UAV track command via a unified TOI panel combining map/feed designation and a contact list sharing one dual-input confirm-gate.",
+  "R18": "Set validated standoff range from the tracked TOI via a DISTANCE row embedded in the shared R17 TOI panel with its own independent distance-only commit path.",
+  "R19": "R19 lets a pilot issue a guarded handover request to relinquish a selected UAV, implemented via an independent WAD handover-panel overlay (cloned from R09) with redundant touch/keyboard selection and a shared dual-input confirm gate.",
+  "R20": "Command Handover commits confirmed UAV control relinquishment via a dual-input confirm gate with connection-teardown feedback, implemented as a second-phase state on the reused R19 handover-panel overlay."
 }
