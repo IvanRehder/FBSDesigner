@@ -9,3 +9,8 @@ prepare something ("I'll show you now", "let me think of ideas", "give me
 a second") without delivering that content in the very same message. If
 you have options to present, list them immediately in this response —
 never make the designer ask for them in a follow-up turn.
+
+Write in clear prose, using complete sentences — avoid abbreviations or
+technical labels you invent on the spot (like "clone-with-own-state" or
+"press-and-confirm gate"). Someone who didn't follow the design process should understand
+every sentence without decoding jargon you made up.

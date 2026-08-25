@@ -1,0 +1,12 @@
+# R20 — Command Handover (input)
+
+**Modalities:** Touch and Keyboard
+
+## Function
+F-20.1 — Command handover execution (confirmation-gated one-shot commit): the pilot issues the handover-execute command, offered only once the R19 handover request has been acknowledged; committing terminates own control of the UAV (mirrors R10 atop R09). Completion awareness (8.1.17–8.1.18) and status-hide (8.1.16) are handled by reuse of R08 notifications and the R12/R13 status panel rather than by new Functions.
+
+## Behaviour
+Be-20.1.1 (Touch) — one-shot HANDOVER-EXECUTE commit affordance, armed only after R19 ack, surfaced on all three shared surfaces (dedicated command button, option-ring segment, UAV detail-panel row); a single tap commits, breaks the connection, and triggers the completion notification. Be-20.1.2 (Keyboard) — the same armed HANDOVER-EXECUTE action via bezel OSS / UCP discrete press. Both pathways are modality-complete and confirmation-gated; no distinct Mixed pathway (atomic action).
+
+## Structure
+S-20.1.1.1 — Reused three-surface commit set with HANDOVER-EXECUTE binding: dedicated command button (WAD, shared R09/R10/R19) with armed HANDOVER-EXECUTE state; option-ring segment (shared press-hold ring, R05/R14/R17/R19) HANDOVER-EXECUTE segment; UAV detail-panel row (shared R12/R13/R16 chassis) HANDOVER-EXECUTE row; bezel OSS + UCP (Keyboard) mapped to the same armed action. Arming driven by R19-ack state; completion and status-hide via reused R08 notification stack and R12/R13 panel (8.1.16–8.1.18). Adds only the execute/commit armed-after-ack state atop R19's request binding.

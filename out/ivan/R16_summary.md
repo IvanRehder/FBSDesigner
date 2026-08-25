@@ -1,0 +1,12 @@
+# R16 — Expose ISR Sensor Data (input)
+
+**Modalities:** Touch and Keyboard
+
+## Function
+F-16.1 — Summon ISR sensor feed into view: the pilot obtains access to the ISR sensor data output on demand (make it present/visible). F-16.2 — Select which ISR data stream to expose: the pilot chooses among multiple ISR sources/sensors what to bring up.
+
+## Behaviour
+Be-16.1.1 (Touch): one-shot summon/dismiss of the ISR feed via a 'ISR FEED' button on the UAV screen plus a WAD panel header control. Be-16.1.2 (Keyboard): bezel OSS / UCP soft-key toggle of the feed panel on/off. Be-16.2.1 (Touch): direct source selection via in-panel source tabs/list. Be-16.2.2 (Keyboard): bezel rotary/UCP up-down stepping through available sources. All pathways modality-complete; Mixed pathway dropped.
+
+## Structure
+S-16.1.1.1 — ISR Feed Panel/Window on WAD (stacked overlay up to 8-source limit, reusing R12/R13 Detail/Status Panel chassis: header, close X, persistent toggle) + 'ISR FEED' button on UAV screen (Touch invocation) + WAD panel header X/re-summon control (Touch) + bezel OSS/UCP soft-key toggle (Keyboard). S-16.2.1.1 — in-panel source tab strip/list (Touch, one entry per sensor source, active highlighted) + bezel rotary (detented)/UCP up-down keys (Keyboard) reflected on the same tab strip. Reuse flags: panel chassis <- R12/R13; multi-surface invocation <- R09/R14; optional summon-ack <- R08.

@@ -32,6 +32,8 @@ st.set_page_config(page_title="FBS Design", layout="wide")
 LAYERS = ["function", "behaviour", "structure"]
 LAYER_LABEL = {"function": "Function", "behaviour": "Behaviour", "structure": "Structure"}
 LAYER_HINTS = json.loads(Path("layer_hints.json").read_text())
+CONDITION_PREFIX = "ai"
+PARTICIPANT_DIGITS = 2  # ajusta aqui se os números dos participantes tiverem outra quantidade de dígitos
 
 INTRO_TEXT = Path("intro_text.md").read_text()
 MUMT_TEXT = Path("mumt_text.md").read_text()
@@ -118,7 +120,7 @@ def render_designer_field(f):
     raise ValueError(f"tipo de campo desconhecido em designer_fields.json: {f['type']}")
 
 def admin_panel():
-    st.title("Admin — fbs_ai_out")
+    st.title(f"Admin — {core.BASE_OUT_DIR}")
 
     req_codes = {r["code"] for r in core.REQUIREMENTS}
     designers = sorted(p.name for p in core.BASE_OUT_DIR.iterdir() if p.is_dir())
@@ -258,16 +260,21 @@ def designer_gate():
     if "designer_id" in st.session_state:
         return
     st.title("FBS Design")
-    st.caption("Identifique-se antes de começar (combine esse código com o pesquisador).")
-    designer_input = st.text_input("Seu identificador", key="designer_input")
-    if not designer_input.strip():
+    st.caption(f"Digite seu número de participante ({PARTICIPANT_DIGITS} dígitos, combinado com o pesquisador).")
+    numero_input = st.text_input("Número do participante", key="designer_input", max_chars=PARTICIPANT_DIGITS)
+    raw = numero_input.strip()
+    if not raw:
         st.stop()
+    if not raw.isdigit() or len(raw) > PARTICIPANT_DIGITS:
+        st.warning(f"Digite só números, até {PARTICIPANT_DIGITS} dígitos.")
+        st.stop()
+    designer_input = f"{CONDITION_PREFIX}_{raw.zfill(PARTICIPANT_DIGITS)}"
 
     if core.designer_registered(designer_input):
         st.session_state.designer_id = core.set_designer(designer_input)
         st.rerun()
 
-    st.info("Esse identificador ainda não foi usado. Preencha os dados abaixo pra registrar.")
+    st.info("Esse número ainda não foi usado. Preencha os dados abaixo pra registrar.")
     with st.form("registro_form"):
         values = {f["key"]: render_designer_field(f) for f in DESIGNER_FIELDS}
         registrar = st.form_submit_button("Registrar e continuar")

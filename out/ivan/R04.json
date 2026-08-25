@@ -1,0 +1,12 @@
+{
+  "code": "R04",
+  "name_en": "Stop Using Autopilot",
+  "type": "input",
+  "modalities": ["Touch", "Keyboard"],
+  "function": "F-04.1 — To terminate an active autopilot mode. F-04.2 — To enable pilot selection of manual flight control. Both retained as distinct Functions once each was given a genuinely different Behaviour (re-press vs. one-shot MANUAL); before that, F-04.2 was assessed as collapsing into F-04.1 (same interaction possibilities) and was almost dropped as a rejected candidate.",
+  "function_summary": "F-04.1: terminate active AP mode. F-04.2: enable manual selection. Kept as two Functions once distinguished by different Behaviours.",
+  "behaviour": "Be-04.1 — Deactivate-by-re-press: pilot re-presses the currently-active mode control to deselect it; HMI forwards manual-control command; mode indicator clears on confirmation. Realizes F-04.1. Be-04.2 — One-shot disengage: pilot issues a single discrete action on a dedicated MANUAL affordance. Realizes F-04.2. Both modality-complete redundant (Touch alone / Keyboard alone / mixed). Design tension flagged: re-press/deselect (Be-04.1) carries the noise/vibration ambiguity originally raised against deselection-based control (favoring a dedicated MANUAL affordance instead) — accepted as secondary route, with the dedicated MANUAL (Be-04.2) as the robust primary.",
+  "behaviour_summary": "Be-04.1 re-press deselect (→F-04.1); Be-04.2 one-shot MANUAL (→F-04.2). Both modality-complete.",
+  "structure": "S-04.1 — Autopilot mode panel (WAD), shared with R03; active-mode controls support re-tap-to-deselect. Touch path for Be-04.1. S-04.2 — Bezel mode buttons (OSS), shared with R03; active-mode OSS re-press-to-deselect + dedicated MANUAL button. Keyboard path, shared by both Behaviours. S-04.3 — Dedicated MANUAL touch button (WAD) on the mode panel, counterpart to the S-04.2 bezel MANUAL button. Touch path for Be-04.2. All reused/extended from R03; no new hardware.",
+  "structure_summary": "S-04.1 WAD panel (Touch, re-press) + S-04.2 bezel OSS (Keyboard, shared) + S-04.3 dedicated MANUAL touch button (Touch, one-shot). Reused from R03."
+}

@@ -1,0 +1,12 @@
+# R17 — Command Track Target of Interest (TOI) (input)
+
+**Modalities:** Touch and Keyboard
+
+## Function
+F-17.1 — Designate the TOI: establish which target the UAV should track (spatial/identity selection of the target), reusing R14's target-selection surface. F-17.2 — Command the UAV to track the designated TOI: commit the tracking order, directing UAV sensors to lock/center on the specified target so the UAV enters tracking on that target.
+
+## Behaviour
+F-17.1: Be-17.1.1 — Touch-only: pilot taps a target symbol on the Map/ISR feed to select it; press-hold on empty space drops a TOI marker (reuses R14 press-hold→option-ring pattern); selected target highlights as active TOI. Be-17.1.2 — Keyboard-only: pilot cycles detected tracks/contacts with a bezel rotary and confirms selection via OSS, or enters target coordinates/track-ID via UCP alphanumeric. F-17.2: Be-17.2.1 — Touch-only: with a TOI active, pilot selects TRACK from the option-ring or a dedicated on-screen TRACK button for one-shot commit. Be-17.2.2 — Keyboard-only: dedicated bezel TRACK OSS press commits tracking on the active TOI. Be-17.2.3 — Mixed: designate via Touch (tap target), commit via Keyboard (bezel TRACK OSS). Each modality alone stays modality-complete; Mixed is an offered convenience, not a required split.
+
+## Structure
+S-17.1.1.1 — Map/ISR-anchored designation surface (serves Be-17.1.1 + Be-17.1.2): Map view + R16 ISR Feed Panel canvas, reused/extended track/contact glyph layer (tappable, highlights active TOI), press-hold→option-ring (shared R05/R14) for marker drop/designation, bezel rotary track-list cycle + bezel OSS confirm, UCP alphanumeric for track-ID/coordinate entry, TDC cursor-mediated pointing on WAD. S-17.2.1.1 — Tracking commit controls (serves Be-17.2.1/.2/.3): option-ring TRACK segment (Touch, on active TOI), dedicated bezel TRACK OSS (Keyboard commit), TOI detail/status row with inline TRACK affordance (reuses R12/R13 Detail Panel chassis). Shared acknowledgment: R08 notification stack (audio tone + visual pop-up/marker) for execution confirmation (7.1.7–7.1.10), no new element. Net-new to R17: only the TRACK commit affordance (ring segment + bezel OSS + detail row).

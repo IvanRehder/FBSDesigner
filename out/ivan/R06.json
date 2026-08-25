@@ -1,0 +1,12 @@
+{
+  "code": "R06",
+  "name_en": "Communicate Order",
+  "type": "output",
+  "modalities": ["Screen", "Audio-out"],
+  "function": "F-06.1 — Convey the order's content to the pilot (comprehension of what is tasked): the pilot understands what the order is — type, target/area, parameters — not just that one arrived. Sustained readable/legible presentation the pilot can parse and reference while deciding/acting. Candidates dropped: arrival-awareness (folded into Behaviour as attention-capture, same pattern as R02) and persistent order-queue state (over-reach — the use cases describe a single inform step, no order-lifecycle management).",
+  "function_summary": "F-06.1: convey order content to pilot (comprehension of what is tasked).",
+  "behaviour": "Be-06.1.1 — Full parallel presentation: on order arrival, complete order content rendered persistently on Screen AND spoken in full via templated TTS; either channel alone conveys the complete order. Orders are bounded and structured (type + target/area + few parameters), so the full readout is a short templated utterance, not open-ended narration — which keeps the verbose-TTS/comms concern realistic. Chosen over attention-cue+on-demand-readout and tiered summary-then-detail because comprehension of a safety-critical inbound order shouldn't be gated on a pilot re-request.",
+  "behaviour_summary": "Be-06.1.1: full parallel presentation — persistent Screen content + templated full TTS, either channel complete alone.",
+  "structure": "S-06.1.1.1 — Order Content Panel (WAD, Screen): persistent templated full-order display (type, target/AOI, parameters, timestamp); stacked overlay layer on the R05 Map/task surface (order anchors to POI/AOI). Always-complete Screen path. S-06.1.1.2 — Order TTS readout (cockpit audio, Audio-out): templated full-order speech on arrival, fixed slot structure; reuses R02's shared notify/audio-out channel. Always-complete Audio path. S-06.1.1.3 — HUD order flag (HUD, Screen): minimal eyes-out 'new order' indicator pointing to the WAD panel; supplementary (not a complete channel by itself), consistent with R02's dedicated HUD flag pattern. Complete-alone guarantee: WAD panel (Screen) OR TTS readout (Audio).",
+  "structure_summary": "S-06.1.1.x: WAD Order Content Panel + templated TTS readout + supplementary HUD flag. Screen and Audio each complete alone."
+}

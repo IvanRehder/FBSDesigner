@@ -1,0 +1,15 @@
+{
+  "code": "R03",
+  "name_en": "Select Autopilot Mode",
+  "type": "input",
+  "modalities": [
+    "Touch",
+    "Keyboard"
+  ],
+  "function": "Closing on **S-03.1 — Autopilot Mode Panel (WAD) + Bezel mode buttons.**\n\n**R03 fully closed:**\n- **F-03.1** — Engage an autopilot mode.\n- **Be-03.1** — Direct mode selection (flat, one-shot).\n- **S-03.1** — Autopilot Mode Panel (WAD, touch) + Bezel mode OSS/rotary (keyboard), one-shot engage.\n\nShared-structure notes carried forward: WAD panel shared with R02; bezel OSS block flagged as candidate for reuse with other discrete autopilot actions.\n\nReady for the next requirement.",
+  "function_summary": "Select autopilot mode via panel or bezel button.",
+  "behaviour": "We already closed the Behaviour for F-03.1 (Be-03.1) and its Structure (S-03.1). R03 is complete.\n\nDo you want to:\n- **Re-open R03's Behaviour** with fresh candidates (I'll relabel them Be-03.1.1, Be-03.1.2… tied explicitly to the F-03.1 index), or\n- Move to the **next requirement**?\n\nIf re-opening, here are the candidates for F-03.1 (Engage an autopilot mode), Touch + Keyboard:\n\n**Be-03.1.1 — Direct mode selection (flat, one-shot).**\nEach mode is individually addressable; committing to one *is* engagement. Touch: tap the mode. Keyboard: dedicated OSS per mode, or rotary-step + commit button. One deliberate actuation engages. *(This is what we closed on.)*\n\n**Be-03.1.2 — Default-engage then reselect.**\nOne actuation engages a predefined default mode; pilot changes mode afterward. Optimizes engage-speed under workload, defers discrimination. Distinct goal, but presumes a default mode the requirement doesn't specify.\n\n**Be-03.1.3 — Confirm-guarded engagement.**\nSelection is a proposal; a second distinct actuation (bezel confirm / second tap) commits it. Guards against accidental engagement — treats engaging automation as a safety-critical, deliberate act. Distinct goal (authority safety over speed).\n\nRecommendation stays **Be-03.1.1** — matches the one-shot merged Function and satisfies redundancy cleanly.\n\nConfirm the relabel to **Be-03.1.1**, or tell me to proceed to the next requirement.",
+  "behaviour_summary": "Re-opening autopilot engagement Behaviour with indexed candidates",
+  "structure": "Provide the next requirement and I'll proceed — ideally with:\n\n- **Requirement ID + name** (e.g. R04)\n- **Input/output nature**\n- **Fixed modalities** for it\n- **Intent** (one line)\n\nI'll then state the intent back and propose candidate Functions (F-04.x).",
+  "structure_summary": "Requirement Intake Template for Function Proposal Workflow"
+}
