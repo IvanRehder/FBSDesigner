@@ -1,0 +1,15 @@
+{
+  "code": "R15",
+  "name_en": "Input Search Pattern",
+  "type": "input",
+  "modalities": [
+    "Touch",
+    "Keyboard"
+  ],
+  "function": "F-15.1 — Specify search-pattern geometry over a geographic area: the pilot delimits where coverage happens by defining the area/track shape (box, spiral, sector, polygon) anchored on the map. F-15.2 — Parameterize a search pattern's scan attributes: the pilot sets how the pattern is flown/scanned — leg spacing, orientation/heading, scan speed, overlap.",
+  "function_summary": "Define search-pattern area geometry and scan parameters.",
+  "behaviour": "F-15.1: Be-15.1.1 (Touch-only) — tap to drop area vertices/corners and drag to size/rotate the shape with live geometry preview, then commit. Be-15.1.2 (Keyboard-only) — enter geometry numerically via UCP/bezel (anchor coords, dimensions, orientation), map echoes each value, commit via OSS. Be-15.1.3 (Mixed) — touch to place/rough-shape the area, keyboard to refine exact coords/dimensions of the same object; each path standalone-complete. F-15.2: Be-15.2.1 (Touch-only) — Setpoint-style panel with keypad entry, steppers and presets for each attribute, all by touch. Be-15.2.2 (Keyboard-only) — same attribute set via bezel rotary (step) + UCP alphanumeric (direct), field-by-field, commit via OSS. Be-15.2.3 (Mixed) — field-by-field mix on the Setpoint Panel (touch some fields, keyboard others); falls out of the same structure, not a separate design effort.",
+  "behaviour_summary": "Multimodal drop-area geometry creation and attribute editing",
+  "structure": "F-15.1 (Be-15.1.1/.1.2/.1.3): S-15.1.x.1 — Map-anchored geometry editor (recommended): Search-Area overlay layer on the shared Map view with draggable vertex/rotate handles (Touch) + two-way-bound Geometry Field strip via UCP alphanumeric + bezel rotary (Keyboard), binding between them serving Mixed; commit via OSS + on-panel button; reuses Map view and overlay/commit pattern (R05/R14). S-15.1.x.2 — Shape-type palette + parametric form (fallback): palette selects shape type (box/spiral/sector/ladder), Geometry Field strip drives dimensions, map shows result; weaker direct-manipulation touch story. F-15.2 (Be-15.2.1/.2.2/.2.3): S-15.2.x.1 — Re-instantiated Setpoint Panel (recommended, shared reuse from R01/R11) with search-pattern attribute set (leg spacing, orientation, scan speed, overlap %): keypad/steppers/presets (Touch), bezel rotary + UCP (Keyboard), field-by-field mix (Mixed), acknowledgment via shared R08 notification stack. S-15.2.x.2 — Inline attribute rows folded into the F-15.1 geometry panel: unified surface, single commit; diverges from Setpoint-Panel convention.",
+  "structure_summary": "Map-anchored search-area geometry and pattern parameter editors"
+}

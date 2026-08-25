@@ -21,7 +21,7 @@ PRICE_PER_MTOK = {"input": 5.0, "output": 25.0}
 # Opções (Opus 4.8): "low" | "medium" | "high" | "xhigh" | "max"
 EFFORT      = "high"   # diálogo (F/Be/S)
 EFFORT_MISC = "low"    # resumos (tarefa trivial)
-BASE_OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "fbs_ai_out"))
+BASE_OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "out"))
 BASE_OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 def current_out_dir():

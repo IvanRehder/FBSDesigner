@@ -1,0 +1,12 @@
+# R13 — Communicate UAV Status (output)
+
+**Modalities:** Screen and Audio-out
+
+## Function
+F-13.1 — Maintain continuous UAV status awareness (persistent, ambient display of link, mode, health, fuel, position/attitude summary); F-13.2 — Alert the pilot to UAV status changes/anomalies (event-driven, attention-capturing on transitions, degradation, faults).
+
+## Behaviour
+Be-13.1.1 — Persistent multi-field status render: UAV status fields continuously displayed on Screen in a fixed panel, updating in place as new data arrives; no steady-state audio. Be-13.2.1 — Redundant alert on transition: on a status change/fault, fire a one-shot audio tone plus a visual highlight/flag on the changed field. Be-13.2.2 — Severity-graded alert: same as Be-13.2.1 but tone and visual treatment differentiated by severity tier (advisory/caution/warning).
+
+## Structure
+S-13.1.1.1 — Extended R12 UAV Detail/Status Panel on WAD with live field set (link, mode, health, fuel, position/attitude summary), updating in place (shared with R12 visibility and R08 notifications); S-13.1.1.2 — HUD abbreviated always-on status strip (link/mode/health rollup) for head-up glance; S-13.2.x.1 — R08 notification stack, severity-parameterized: single tone for Be-13.2.1 / tiered tones for Be-13.2.2, plus field-level highlight/flag (colour-coded by severity) and reusable R08 pop-up/notification-marker (no new hardware); S-13.2.x.2 — HUD-escalated warning that pushes top-severity flags to the S-13.1.1.2 strip.
