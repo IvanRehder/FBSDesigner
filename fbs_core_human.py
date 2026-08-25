@@ -13,7 +13,7 @@ import time
 import streamlit as st
 from pathlib import Path
 
-BASE_OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "fbs_human_out"))
+BASE_OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "out"))
 BASE_OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 def current_out_dir():
@@ -43,32 +43,32 @@ def set_designer(designer_id):
     return safe
 
 def save_designer_info(info):
-    (current_out_dir() / "designer_info.json").write_text(json.dumps(info, indent=2, ensure_ascii=False))
+    (current_out_dir() / "designer_info.json").write_text(json.dumps(info, indent=2, ensure_ascii=False), encoding="utf-8")
 
-REQUIREMENTS = json.loads(Path("requirements.json").read_text())
+REQUIREMENTS = json.loads(Path("requirements.json").read_text(encoding="utf-8"))
 LAYER_INDEX_KEY = {"function": "F", "behaviour": "Be", "structure": "S"}
 
 def load_summary():
     p = current_out_dir() / "_summary.json"
     if p.exists():
-        return json.loads(p.read_text())
+        return json.loads(p.read_text(encoding="utf-8"))
     return {}
 
 def save_summary(summary):
-    (current_out_dir() / "_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False))
+    (current_out_dir() / "_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
 
 def append_to_index(layer, label, code, text):
     idx_path = current_out_dir() / "elements_index.json"
-    idx = json.loads(idx_path.read_text()) if idx_path.exists() else {"F": [], "Be": [], "S": []}
+    idx = json.loads(idx_path.read_text(encoding="utf-8")) if idx_path.exists() else {"F": [], "Be": [], "S": []}
     idx[layer].append({"label": label, "requirement": code, "text": text})
-    idx_path.write_text(json.dumps(idx, indent=2, ensure_ascii=False))
+    idx_path.write_text(json.dumps(idx, indent=2, ensure_ascii=False), encoding="utf-8")
 
 def save_manual(code, state):
-    (current_out_dir() / f"{code}_manual.json").write_text(json.dumps(state, indent=2, ensure_ascii=False))
+    (current_out_dir() / f"{code}_manual.json").write_text(json.dumps(state, indent=2, ensure_ascii=False), encoding="utf-8")
 
 def load_manual(code):
     p = current_out_dir() / f"{code}_manual.json"
-    return json.loads(p.read_text()) if p.exists() else None
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
 
 def clear_manual(code):
     p = current_out_dir() / f"{code}_manual.json"
@@ -111,41 +111,41 @@ def sus_done():
 def save_sus(responses):
     score = sus_score(responses)
     (current_out_dir() / "sus.json").write_text(json.dumps(
-        {"responses": responses, "score": score}, indent=2, ensure_ascii=False))
+        {"responses": responses, "score": score}, indent=2, ensure_ascii=False), encoding="utf-8")
     return score
 
 
 # ── toy problem (aquecimento, sempre zero IA, precisa de aprovação) ──────────
 def load_toy_requirement():
-    return json.loads(Path("toy_requirement.json").read_text())
+    return json.loads(Path("toy_requirement.json").read_text(encoding="utf-8"))
 
 def toy_status():
     p = current_out_dir() / "toy_status.json"
-    return json.loads(p.read_text()) if p.exists() else {"submitted": False, "approved": False}
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {"submitted": False, "approved": False}
 
 def load_toy_submission():
     p = current_out_dir() / "toy_submission.json"
-    return json.loads(p.read_text()) if p.exists() else None
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
 
 def submit_toy_problem(entries):
-    (current_out_dir() / "toy_submission.json").write_text(json.dumps(entries, indent=2, ensure_ascii=False))
+    (current_out_dir() / "toy_submission.json").write_text(json.dumps(entries, indent=2, ensure_ascii=False), encoding="utf-8")
     (current_out_dir() / "toy_status.json").write_text(json.dumps(
-        {"submitted": True, "approved": False}, indent=2, ensure_ascii=False))
+        {"submitted": True, "approved": False}, indent=2, ensure_ascii=False), encoding="utf-8")
 
 def approve_toy(designer_folder):
     """Usado pelo painel admin, que opera fora do designer 'atual' — por
     isso recebe a pasta explicitamente em vez de depender de current_out_dir()."""
     p = designer_folder / "toy_status.json"
-    status = json.loads(p.read_text()) if p.exists() else {"submitted": True, "approved": False}
+    status = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {"submitted": True, "approved": False}
     status["approved"] = True
-    p.write_text(json.dumps(status, indent=2, ensure_ascii=False))
+    p.write_text(json.dumps(status, indent=2, ensure_ascii=False), encoding="utf-8")
 
 def reopen_toy():
     """Usado pelo próprio designer, na tela de 'aguardando aprovação', pra
     poder editar e reenviar em vez de ficar travado esperando."""
     status = toy_status()
     status["submitted"] = False
-    (current_out_dir() / "toy_status.json").write_text(json.dumps(status, indent=2, ensure_ascii=False))
+    (current_out_dir() / "toy_status.json").write_text(json.dumps(status, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 # ── cronometragem de parede ───────────────────────────────────────────────────
@@ -155,11 +155,11 @@ def _started_path(code):
 def mark_started(code):
     p = _started_path(code)
     if not p.exists():
-        p.write_text(str(time.time()))
+        p.write_text(str(time.time()), encoding="utf-8")
 
 def elapsed_wall_s(code):
     p = _started_path(code)
-    return round(time.time() - float(p.read_text()), 1) if p.exists() else None
+    return round(time.time() - float(p.read_text(encoding="utf-8")), 1) if p.exists() else None
 
 
 # ── fechamento do requisito (zero IA) ─────────────────────────────────────────
@@ -187,15 +187,14 @@ def close_requirement_manual(req, entries, revisions, summary):
         "structure": joined("structure"),
         "structure_summary": entries["structure"][0]["label"] if entries["structure"] else "",
     }
-    (current_out_dir() / f"{code}.json").write_text(json.dumps(fbs, indent=2, ensure_ascii=False))
-    (current_out_dir() / f"{code}_log.json").write_text(json.dumps(entries, indent=2, ensure_ascii=False))
+    (current_out_dir() / f"{code}.json").write_text(json.dumps(fbs, indent=2, ensure_ascii=False), encoding="utf-8")
+    (current_out_dir() / f"{code}_log.json").write_text(json.dumps(entries, indent=2, ensure_ascii=False), encoding="utf-8")
     (current_out_dir() / f"{code}_summary.md").write_text(
         f"# {code} — {req['name_en']} ({req['type']})\n\n"
         f"**Modalities:** {mods}\n\n"
         f"## Function\n{fbs['function']}\n\n"
         f"## Behaviour\n{fbs['behaviour']}\n\n"
-        f"## Structure\n{fbs['structure']}\n"
-    )
+        f"## Structure\n{fbs['structure']}\n", encoding="utf-8")
     summary[code] = entries["function"][0]["text"][:80] if entries["function"] else ""
     save_summary(summary)
 
@@ -208,7 +207,7 @@ def close_requirement_manual(req, entries, revisions, summary):
         "wall_clock_s": elapsed_wall_s(code),
     }
     (current_out_dir() / f"{code}_usage.json").write_text(json.dumps(
-        {"calls": [], "totals": totals}, indent=2, ensure_ascii=False))
+        {"calls": [], "totals": totals}, indent=2, ensure_ascii=False), encoding="utf-8")
     clear_manual(code)
     _started_path(code).unlink(missing_ok=True)
     return fbs
@@ -221,10 +220,10 @@ def reopen_requirement(code):
     Retorna (closed_at antigo, conteúdo antigo de {code}_log.json — as
     entradas F/Be/S de antes, prontas pra recarregar na edição)."""
     p = current_out_dir() / f"{code}.json"
-    old = json.loads(p.read_text())
+    old = json.loads(p.read_text(encoding="utf-8"))
     old_closed_at = old.get("closed_at")
     old_log_path = current_out_dir() / f"{code}_log.json"
-    old_log = json.loads(old_log_path.read_text()) if old_log_path.exists() else None
+    old_log = json.loads(old_log_path.read_text(encoding="utf-8")) if old_log_path.exists() else None
     n = 1
     while (current_out_dir() / f"{code}_prev{n}.json").exists():
         n += 1
@@ -249,7 +248,7 @@ def downstream_affected(code, old_closed_at):
             continue
         p = current_out_dir() / f"{other}.json"
         if p.exists():
-            data = json.loads(p.read_text())
+            data = json.loads(p.read_text(encoding="utf-8"))
             if data.get("closed_at", 0) > old_closed_at:
                 affected.append(other)
     return affected

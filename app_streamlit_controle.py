@@ -29,16 +29,16 @@ st.set_page_config(page_title="FBS Design — Controle", layout="wide")
 
 LAYERS = ["function", "behaviour", "structure"]
 LAYER_LABEL = {"function": "Function", "behaviour": "Behaviour", "structure": "Structure"}
-LAYER_HINTS = json.loads(Path("layer_hints.json").read_text())
+LAYER_HINTS = json.loads(Path("layer_hints.json").read_text(encoding="utf-8"))
 CONDITION_PREFIX = "human"
 PARTICIPANT_DIGITS = 2  # ajusta aqui se os números dos participantes tiverem outra quantidade de dígitos
 
-INTRO_TEXT = Path("intro_text.md").read_text()
-MUMT_TEXT = Path("mumt_text.md").read_text()
-EXAMPLE_TEXT = Path("example_text.md").read_text()
-MECHANICS_TEXT = Path("mechanics_human.md").read_text()
+INTRO_TEXT = Path("intro_text.md").read_text(encoding="utf-8")
+MUMT_TEXT = Path("mumt_text.md").read_text(encoding="utf-8")
+EXAMPLE_TEXT = Path("example_text.md").read_text(encoding="utf-8")
+MECHANICS_TEXT = Path("mechanics_human.md").read_text(encoding="utf-8")
 CONDITION = "human"
-DESIGNER_FIELDS = [f for f in json.loads(Path("designer_fields.json").read_text())
+DESIGNER_FIELDS = [f for f in json.loads(Path("designer_fields.json").read_text(encoding="utf-8"))
                    if f.get("only_for", CONDITION) == CONDITION]
 
 def render_intro():
@@ -58,7 +58,7 @@ def _screen_popup(path, caption):
     st.image(str(path), use_container_width=True)
 
 def render_screens():
-    screens = json.loads(Path("screens.json").read_text())
+    screens = json.loads(Path("screens.json").read_text(encoding="utf-8"))
     if not screens:
         st.info("Nenhuma tela cadastrada ainda.")
         return
@@ -140,7 +140,7 @@ def admin_panel():
         folder = core.BASE_OUT_DIR / d
         status_path = folder / "toy_status.json"
         if status_path.exists():
-            status = json.loads(status_path.read_text())
+            status = json.loads(status_path.read_text(encoding="utf-8"))
             if status.get("submitted") and not status.get("approved"):
                 pending.append((d, folder))
     if not pending:
@@ -149,7 +149,7 @@ def admin_panel():
         with st.expander(f"📋 {d}"):
             sub_path = folder / "toy_submission.json"
             if sub_path.exists():
-                entries = json.loads(sub_path.read_text())
+                entries = json.loads(sub_path.read_text(encoding="utf-8"))
                 for layer in ("function", "behaviour", "structure"):
                     st.markdown(f"**{layer.capitalize()}**")
                     for item in entries.get(layer, []):
