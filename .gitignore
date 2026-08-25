@@ -1,22 +1,28 @@
+# Python
 __pycache__/
 *.pyc
+venv/
+.venv/
+
+# Env / secrets
 .env
-.streamlit/secrets.toml
-fbs_ai_out/ivan
-fbs_human_out/ivan
-old/
-*.zipgit p
+*.env
 api_key.env
-Modal_Map.txt
+.streamlit/
+
+# Dados / gerados
 *.csv
 *.svg
 *.tex
 *.zip
 *.xlsx
+
+# Específico do projeto
+fbs_ai_out/ivan
+fbs_human_out/ivan
+old/
+Modal_Map.txt
 delphi_comparacao.md
 fbs_design.py
 gen_requirements.py
-.streamlit/
-code.txtvenv/
-__pycache__/
-*.pyc
+code.txt
