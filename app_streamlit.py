@@ -19,11 +19,6 @@ import zipfile
 from pathlib import Path
 import streamlit as st
 
-if "ANTHROPIC_API_KEY" in st.secrets:
-    os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
-if "FBS_OUT_DIR" in st.secrets:
-    os.environ["FBS_OUT_DIR"] = st.secrets["FBS_OUT_DIR"]
-
 import anthropic
 import fbs_core_ai as core
 
