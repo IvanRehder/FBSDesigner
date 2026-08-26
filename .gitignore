@@ -18,11 +18,18 @@ api_key.env
 *.xlsx
 
 # Específico do projeto
-fbs_ai_out/ivan
-fbs_human_out/ivan
+out/
 old/
+report/
+handoff/
 Modal_Map.txt
 delphi_comparacao.md
 fbs_design.py
 gen_requirements.py
 code.txt
+hmi_design*
+wad_components.md
+Pilot–System Interactions.md
+json_to_tex.py
+jupyter.ipynb
+EOF

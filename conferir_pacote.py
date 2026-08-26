@@ -23,8 +23,8 @@ REQUIRED_AI = [
 ]
 
 REQUIRED_HUMAN = [
-    "app_streamlit_controle.py", "fbs_core_human.py", "mechanics_human.md",
-    "iniciar_controle.sh", "iniciar_controle.bat",
+    "app_streamlit_human.py", "fbs_core_human.py", "mechanics_human.md",
+    "iniciar_human.sh", "iniciar_human.bat",
 ]
 
 
@@ -49,7 +49,7 @@ def main():
     all_missing = []
     all_missing += check(base, REQUIRED_COMMON, "Comum às duas condições")
     all_missing += check(base, REQUIRED_AI, "Condição IA")
-    all_missing += check(base, REQUIRED_HUMAN, "Condição Controle")
+    all_missing += check(base, REQUIRED_HUMAN, "Condição Human")
 
     screens_dir = base / "screens"
     print("--- Pasta de telas ---")
