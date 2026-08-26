@@ -21,6 +21,7 @@ api_key.env
 out/
 old/
 report/
+latex/
 handoff/
 Modal_Map.txt
 delphi_comparacao.md
