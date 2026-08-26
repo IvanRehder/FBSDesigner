@@ -20,9 +20,6 @@ import zipfile
 from pathlib import Path
 import streamlit as st
 
-if "FBS_OUT_DIR" in st.secrets:
-    os.environ["FBS_OUT_DIR"] = st.secrets["FBS_OUT_DIR"]
-
 from core import fbs_core_human as core
 
 st.set_page_config(page_title="FBS Design — Human", layout="wide")
