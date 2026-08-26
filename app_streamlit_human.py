@@ -23,22 +23,24 @@ import streamlit as st
 if "FBS_OUT_DIR" in st.secrets:
     os.environ["FBS_OUT_DIR"] = st.secrets["FBS_OUT_DIR"]
 
-import fbs_core_human as core
+from core import fbs_core_human as core
 
 st.set_page_config(page_title="FBS Design — Human", layout="wide")
 
+CONTENT_DIR = Path("content")
+
 LAYERS = ["function", "behaviour", "structure"]
 LAYER_LABEL = {"function": "Function", "behaviour": "Behaviour", "structure": "Structure"}
-LAYER_HINTS = json.loads(Path("layer_hints.json").read_text(encoding="utf-8"))
+LAYER_HINTS = json.loads((CONTENT_DIR / "layer_hints.json").read_text(encoding="utf-8"))
 CONDITION_PREFIX = "human"
 PARTICIPANT_DIGITS = 2  # ajusta aqui se os números dos participantes tiverem outra quantidade de dígitos
 
-INTRO_TEXT = Path("intro_text.md").read_text(encoding="utf-8")
-MUMT_TEXT = Path("mumt_text.md").read_text(encoding="utf-8")
-EXAMPLE_TEXT = Path("example_text.md").read_text(encoding="utf-8")
-MECHANICS_TEXT = Path("mechanics_human.md").read_text(encoding="utf-8")
+INTRO_TEXT = (CONTENT_DIR / "intro_text.md").read_text(encoding="utf-8")
+MUMT_TEXT = (CONTENT_DIR / "mumt_text.md").read_text(encoding="utf-8")
+EXAMPLE_TEXT = (CONTENT_DIR / "example_text.md").read_text(encoding="utf-8")
+MECHANICS_TEXT = (CONTENT_DIR / "mechanics_human.md").read_text(encoding="utf-8")
 CONDITION = "human"
-DESIGNER_FIELDS = [f for f in json.loads(Path("designer_fields.json").read_text(encoding="utf-8"))
+DESIGNER_FIELDS = [f for f in json.loads((CONTENT_DIR / "designer_fields.json").read_text(encoding="utf-8"))
                    if f.get("only_for", CONDITION) == CONDITION]
 
 def render_intro():
@@ -58,7 +60,7 @@ def _screen_popup(path, caption):
     st.image(str(path), use_container_width=True)
 
 def render_screens():
-    screens = json.loads(Path("screens.json").read_text(encoding="utf-8"))
+    screens = json.loads((CONTENT_DIR / "screens.json").read_text(encoding="utf-8"))
     if not screens:
         st.info("Nenhuma tela cadastrada ainda.")
         return
@@ -67,7 +69,7 @@ def render_screens():
         cols = st.columns(2)
         for col, s in zip(cols, row):
             with col:
-                path = Path("screens") / s["file"]
+                path = CONTENT_DIR / "screens" / s["file"]
                 if path.exists():
                     st.image(str(path), caption=s.get("caption", ""), use_container_width=True)
                     if st.button("🔍 Ampliar", key=f"zoom_{s['file']}", use_container_width=True):

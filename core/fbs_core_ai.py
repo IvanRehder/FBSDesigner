@@ -23,6 +23,7 @@ EFFORT      = "high"   # diálogo (F/Be/S)
 EFFORT_MISC = "low"    # resumos (tarefa trivial)
 BASE_OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "out"))
 BASE_OUT_DIR.mkdir(parents=True, exist_ok=True)
+CONTENT_DIR = Path("content")
 
 def current_out_dir():
     """A pasta do designer atual. Vive em st.session_state (isolado por
@@ -53,10 +54,10 @@ def set_designer(designer_id):
 def save_designer_info(info):
     (current_out_dir() / "designer_info.json").write_text(json.dumps(info, indent=2, ensure_ascii=False), encoding="utf-8")
 
-SYSTEM_DESCRIPTION = Path("system_description.txt").read_text(encoding="utf-8")
-HMI_BASELINE       = Path("hmi_baseline.txt").read_text(encoding="utf-8")
-RESPONSE_STYLE     = Path("response_style.txt").read_text(encoding="utf-8")
-REQUIREMENTS       = json.loads(Path("requirements.json").read_text(encoding="utf-8"))
+SYSTEM_DESCRIPTION = (CONTENT_DIR / "system_description.txt").read_text(encoding="utf-8")
+HMI_BASELINE       = (CONTENT_DIR / "hmi_baseline.txt").read_text(encoding="utf-8")
+RESPONSE_STYLE     = (CONTENT_DIR / "response_style.txt").read_text(encoding="utf-8")
+REQUIREMENTS       = json.loads((CONTENT_DIR / "requirements.json").read_text(encoding="utf-8"))
 
 LAYERS = ["function", "behaviour", "structure"]
 LAYER_INDEX_KEY = {"function": "F", "behaviour": "Be", "structure": "S"}
@@ -202,7 +203,7 @@ def save_sus(responses):
 
 # ── toy problem (aquecimento, sempre zero IA, precisa de aprovação) ──────────
 def load_toy_requirement():
-    return json.loads(Path("toy_requirement.json").read_text(encoding="utf-8"))
+    return json.loads((CONTENT_DIR / "toy_requirement.json").read_text(encoding="utf-8"))
 
 def toy_status():
     p = current_out_dir() / "toy_status.json"

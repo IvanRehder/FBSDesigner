@@ -11,19 +11,19 @@ import sys
 from pathlib import Path
 
 REQUIRED_COMMON = [
-    "requirements.txt", "requirements.json", "intro_text.md", "mumt_text.md",
-    "example_text.md", "layer_hints.json", "designer_fields.json",
-    "toy_requirement.json", "screens.json",
+    "requirements.txt", "content/requirements.json", "content/intro_text.md",
+    "content/mumt_text.md", "content/example_text.md", "content/layer_hints.json",
+    "content/designer_fields.json", "content/toy_requirement.json", "content/screens.json",
 ]
 
 REQUIRED_AI = [
-    "app_streamlit.py", "fbs_core_ai.py", "mechanics_ai.md",
+    "app_streamlit.py", "core/fbs_core_ai.py", "content/mechanics_ai.md",
     "iniciar_ia.sh", "iniciar_ia.bat",
-    "system_description.txt", "hmi_baseline.txt", "response_style.txt",
+    "content/system_description.txt", "content/hmi_baseline.txt", "content/response_style.txt",
 ]
 
 REQUIRED_HUMAN = [
-    "app_streamlit_human.py", "fbs_core_human.py", "mechanics_human.md",
+    "app_streamlit_human.py", "core/fbs_core_human.py", "content/mechanics_human.md",
     "iniciar_human.sh", "iniciar_human.bat",
 ]
 
@@ -51,7 +51,7 @@ def main():
     all_missing += check(base, REQUIRED_AI, "Condição IA")
     all_missing += check(base, REQUIRED_HUMAN, "Condição Human")
 
-    screens_dir = base / "screens"
+    screens_dir = base / "content" / "screens"
     print("--- Pasta de telas ---")
     if not screens_dir.exists() or not any(screens_dir.iterdir()):
         print("  \u2717 pasta screens/ ausente ou vazia")
