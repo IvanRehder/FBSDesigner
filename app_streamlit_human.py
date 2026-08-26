@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-FBS Design — interface gráfica (Streamlit), condição controle (zero IA).
+FBS Design — interface gráfica (Streamlit), condição human (zero IA).
 O designer entra com Function -> Behaviour -> Structure como itens
 estruturados (label + texto), um de cada vez, validando cada um antes
 de avançar de camada. Nenhuma chamada a modelo de linguagem acontece em
@@ -10,7 +10,7 @@ Setup:
     pip install streamlit
 
 Usage:
-    streamlit run app_streamlit_controle.py
+    streamlit run app_streamlit_human.py
 """
 
 import os
@@ -25,7 +25,7 @@ if "FBS_OUT_DIR" in st.secrets:
 
 import fbs_core_human as core
 
-st.set_page_config(page_title="FBS Design — Controle", layout="wide")
+st.set_page_config(page_title="FBS Design — Human", layout="wide")
 
 LAYERS = ["function", "behaviour", "structure"]
 LAYER_LABEL = {"function": "Function", "behaviour": "Behaviour", "structure": "Structure"}
@@ -92,7 +92,7 @@ def intro_screen():
             st.session_state.show_example = False
             st.rerun()
         st.stop()
-    st.title("FBS Design — Controle")
+    st.title("FBS Design — Human")
     render_intro()
     col1, col2, col3 = st.columns(3)
     if col1.button("💡 Ver um exemplo", use_container_width=True):
@@ -257,7 +257,7 @@ def toy_gate():
 def designer_gate():
     if "designer_id" in st.session_state:
         return
-    st.title("FBS Design — Controle")
+    st.title("FBS Design — Human")
     st.caption(f"Digite seu número de participante ({PARTICIPANT_DIGITS} dígitos, combinado com o pesquisador).")
     numero_input = st.text_input("Número do participante", key="designer_input", max_chars=PARTICIPANT_DIGITS)
     raw = numero_input.strip()
@@ -369,7 +369,7 @@ init_state()
 ss = st.session_state
 
 with st.sidebar:
-    st.title("FBS Design — Controle")
+    st.title("FBS Design — Human")
     st.caption(f"Designer: {st.session_state.designer_id}")
     if st.button("ℹ️ Rever instruções", use_container_width=True):
         st.session_state.show_intro = True

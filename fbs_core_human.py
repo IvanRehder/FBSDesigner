@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-FBS core — condição controle (zero IA). Nenhuma função aqui chama a API
+FBS core — condição human (zero IA). Nenhuma função aqui chama a API
 da Anthropic. O designer entra com Function/Behaviour/Structure como
 itens estruturados (label + texto), um de cada vez; o encerramento do
 requisito só grava o que já foi decidido, sem nenhuma etapa de extração
