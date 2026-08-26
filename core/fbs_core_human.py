@@ -15,6 +15,7 @@ from pathlib import Path
 
 BASE_OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "out"))
 BASE_OUT_DIR.mkdir(parents=True, exist_ok=True)
+CONTENT_DIR = Path("content")
 
 def current_out_dir():
     """A pasta do designer atual. Vive em st.session_state (isolado por
@@ -45,7 +46,7 @@ def set_designer(designer_id):
 def save_designer_info(info):
     (current_out_dir() / "designer_info.json").write_text(json.dumps(info, indent=2, ensure_ascii=False), encoding="utf-8")
 
-REQUIREMENTS = json.loads(Path("requirements.json").read_text(encoding="utf-8"))
+REQUIREMENTS = json.loads((CONTENT_DIR / "requirements.json").read_text(encoding="utf-8"))
 LAYER_INDEX_KEY = {"function": "F", "behaviour": "Be", "structure": "S"}
 
 def load_summary():
@@ -117,7 +118,7 @@ def save_sus(responses):
 
 # ── toy problem (aquecimento, sempre zero IA, precisa de aprovação) ──────────
 def load_toy_requirement():
-    return json.loads(Path("toy_requirement.json").read_text(encoding="utf-8"))
+    return json.loads((CONTENT_DIR / "toy_requirement.json").read_text(encoding="utf-8"))
 
 def toy_status():
     p = current_out_dir() / "toy_status.json"

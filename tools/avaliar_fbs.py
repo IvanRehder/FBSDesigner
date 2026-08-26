@@ -64,7 +64,7 @@ def resolve_base_path(raw_path):
 
 
 def load_requirements():
-    p = Path("requirements.json")
+    p = Path("content/requirements.json")
     if not p.exists():
         sys.exit("requirements.json não encontrado no diretório atual.")
     return json.loads(p.read_text())

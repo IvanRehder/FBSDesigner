@@ -34,7 +34,7 @@ def resolve_base_path(raw_path):
 
 
 def load_requirements():
-    p = Path("requirements.json")
+    p = Path("content/requirements.json")
     if not p.exists():
         sys.exit("requirements.json não encontrado no diretório atual.")
     return json.loads(p.read_text())
@@ -53,7 +53,7 @@ def build_handoff(designer_dir, requirements):
     if not closed:
         return None, "nenhum requisito fechado encontrado nessa pasta"
 
-    lines = [f"# FBS — {designer_dir.name}", ""]
+    lines = [f"# FBS — Espec para Figma — {designer_dir.name}", ""]
     if missing:
         lines.append(f"**⚠ Requisitos ainda não fechados (faltando): {', '.join(missing)}**")
         lines.append("")
