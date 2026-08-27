@@ -23,11 +23,27 @@ pip install -q -r requirements.txt
 if not exist .env (
     type nul > .env
 )
-findstr /C:"ANTHROPIC_API_KEY" .env >nul 2>&1
-if errorlevel 1 (
+
+set "API_KEY="
+
+for /f "tokens=1,* delims==" %%A in ('findstr /B /C:"ANTHROPIC_API_KEY=" .env 2^>nul') do (
+    set "API_KEY=%%B"
+)
+
+if not defined API_KEY (
     echo.
     echo Preciso da sua chave de API da Anthropic ^(o pesquisador te passa isso^).
-    set /p API_KEY="Cola a chave aqui e aperta Enter: "
+    set /p "API_KEY=Cola a chave aqui e aperta Enter: "
+
+    if not defined API_KEY (
+        echo Nenhuma chave foi informada.
+        pause
+        exit /b 1
+    )
+
+    findstr /V /B /C:"ANTHROPIC_API_KEY=" .env > .env.tmp
+    move /Y .env.tmp .env >nul
+
     echo ANTHROPIC_API_KEY=%API_KEY%>> .env
 )
 
