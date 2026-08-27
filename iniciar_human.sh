@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Dá dois cliques nesse arquivo (Mac) ou roda "bash iniciar_controle.sh" (Linux)
+# Dá dois cliques nesse arquivo (Mac) ou roda "bash iniciar_human.sh" (Linux)
 # num terminal aberto nesta pasta. Não precisa saber Python pra usar isso —
 # só precisa ter Python instalado na máquina. Essa condição não usa IA,
 # então não pede chave de API nenhuma.
+
 set -e
 cd "$(dirname "$0")"
 
@@ -23,4 +24,4 @@ pip install -q -r requirements.txt
 
 echo ""
 echo "Abrindo o app no navegador..."
-streamlit run app_streamlit_human.py
+streamlit run app_streamlit_human.py --browser.gatherUsageStats=false
