@@ -201,13 +201,13 @@ def save_sus(responses):
     return score
 
 
-# ── toy problem (aquecimento, sempre zero IA, precisa de aprovação) ──────────
+# ── toy problem (aquecimento, sempre zero IA, informativo, não bloqueia) ────
 def load_toy_requirement():
     return json.loads((CONTENT_DIR / "toy_requirement.json").read_text(encoding="utf-8"))
 
 def toy_status():
     p = current_out_dir() / "toy_status.json"
-    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {"submitted": False, "approved": False}
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {"submitted": False, "acknowledged": False}
 
 def load_toy_submission():
     p = current_out_dir() / "toy_submission.json"
@@ -216,22 +216,23 @@ def load_toy_submission():
 def submit_toy_problem(entries):
     (current_out_dir() / "toy_submission.json").write_text(json.dumps(entries, indent=2, ensure_ascii=False), encoding="utf-8")
     (current_out_dir() / "toy_status.json").write_text(json.dumps(
-        {"submitted": True, "approved": False}, indent=2, ensure_ascii=False), encoding="utf-8")
+        {"submitted": True, "acknowledged": False}, indent=2, ensure_ascii=False), encoding="utf-8")
 
-def approve_toy(designer_folder):
-    """Usado pelo painel admin, que opera fora do designer 'atual' — por
-    isso recebe a pasta explicitamente em vez de depender de current_out_dir()."""
-    p = designer_folder / "toy_status.json"
-    status = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {"submitted": True, "approved": False}
-    status["approved"] = True
-    p.write_text(json.dumps(status, indent=2, ensure_ascii=False), encoding="utf-8")
+def acknowledge_toy():
+    """Designer viu a tela de 'aquecimento concluído' e escolheu seguir em
+    frente — não precisa de ninguém aprovar, só registra que ele passou
+    por ali."""
+    status = toy_status()
+    status["acknowledged"] = True
+    (current_out_dir() / "toy_status.json").write_text(json.dumps(status, indent=2, ensure_ascii=False), encoding="utf-8")
 
 def reopen_toy():
-    """Usado pelo próprio designer, na tela de 'aguardando aprovação', pra
-    poder editar e reenviar em vez de ficar travado esperando."""
+    """Usado pelo próprio designer, na tela de 'aquecimento concluído', pra
+    poder editar e reenviar em vez de seguir com a resposta como está."""
     status = toy_status()
     status["submitted"] = False
     (current_out_dir() / "toy_status.json").write_text(json.dumps(status, indent=2, ensure_ascii=False), encoding="utf-8")
+
 
 
 # ── system prompt ─────────────────────────────────────────────────────────────
