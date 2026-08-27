@@ -31,6 +31,14 @@ if errorlevel 1 (
     echo ANTHROPIC_API_KEY=%API_KEY%>> .env
 )
 
+REM Evita a pergunta de e-mail do Streamlit na primeira execucao
+if not exist "%USERPROFILE%\.streamlit" mkdir "%USERPROFILE%\.streamlit"
+
+if not exist "%USERPROFILE%\.streamlit\credentials.toml" (
+    > "%USERPROFILE%\.streamlit\credentials.toml" echo [general]
+    >> "%USERPROFILE%\.streamlit\credentials.toml" echo email = ""
+)
+
 echo.
 echo Abrindo o app no navegador...
 streamlit run app_streamlit.py
