@@ -19,6 +19,11 @@ import zipfile
 from pathlib import Path
 import streamlit as st
 
+if "ANTHROPIC_API_KEY" in st.secrets:
+    os.environ["ANTHROPIC_API_KEY"] = st.secrets["ANTHROPIC_API_KEY"]
+if "FBS_OUT_DIR" in st.secrets:
+    os.environ["FBS_OUT_DIR"] = st.secrets["FBS_OUT_DIR"]
+
 import anthropic
 from core import fbs_core_ai as core
 
@@ -133,18 +138,18 @@ def admin_panel():
         st.write(f"**{d}** — {closed}/{len(core.REQUIREMENTS)} requisitos fechados · {sus} {em_andamento}")
 
     st.divider()
-    st.subheader("Toy problem — pendentes de aprovação")
-    pending = []
+    st.subheader("Toy problem — enviados (informativo, não bloqueia ninguém)")
+    enviados = []
     for d in designers:
         folder = core.BASE_OUT_DIR / d
         status_path = folder / "toy_status.json"
         if status_path.exists():
             status = json.loads(status_path.read_text(encoding="utf-8"))
-            if status.get("submitted") and not status.get("approved"):
-                pending.append((d, folder))
-    if not pending:
-        st.caption("Nenhum pendente.")
-    for d, folder in pending:
+            if status.get("submitted"):
+                enviados.append((d, folder))
+    if not enviados:
+        st.caption("Nenhum ainda.")
+    for d, folder in enviados:
         with st.expander(f"📋 {d}"):
             sub_path = folder / "toy_submission.json"
             if sub_path.exists():
@@ -153,9 +158,6 @@ def admin_panel():
                     st.markdown(f"**{layer.capitalize()}**")
                     for item in entries.get(layer, []):
                         st.write(f"- {item['label']}: {item['text']}")
-            if st.button(f"✅ Aprovar {d}", key=f"approve_{d}"):
-                core.approve_toy(folder)
-                st.rerun()
 
     st.divider()
     buf = io.BytesIO()
@@ -174,7 +176,7 @@ if st.query_params.get("admin") == "300":
 def toy_gate():
     ss = st.session_state
     status = core.toy_status()
-    if status.get("approved"):
+    if status.get("acknowledged"):
         return
 
     if "toy_entries" not in ss:
@@ -189,13 +191,18 @@ def toy_gate():
                 "Sem nenhuma ajuda de IA, mesmo aqui na condição com IA.")
 
     if status.get("submitted"):
-        st.warning("Você já enviou sua resposta. Aguardando aprovação do "
-                   "pesquisador pra liberar os requisitos reais.")
+        st.success("Você terminou o problema de prática.")
+        st.write(
+            "Se tiver alguma dúvida sobre como isso funciona, fala com o "
+            "pesquisador antes de continuar. Se estiver tudo certo, é só "
+            "seguir em frente pros requisitos reais."
+        )
         col1, col2 = st.columns(2)
-        if col1.button("🔄 Verificar de novo", use_container_width=True):
-            st.rerun()
-        if col2.button("✏️ Editar resposta", use_container_width=True):
+        if col1.button("✏️ Quero revisar minha resposta", use_container_width=True):
             core.reopen_toy()
+            st.rerun()
+        if col2.button("Continuar", type="primary", use_container_width=True):
+            core.acknowledge_toy()
             st.rerun()
         st.stop()
 
