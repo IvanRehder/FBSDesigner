@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 # Dá dois cliques nesse arquivo (Mac) ou roda "bash iniciar_ia.sh" (Linux)
 # num terminal aberto nesta pasta. Não precisa saber Python pra usar isso —
 # só precisa ter Python instalado na máquina.
@@ -6,11 +7,26 @@
 set -e
 cd "$(dirname "$0")"
 
+DEBUG=0
+if [ "${1:-}" = "--debug" ]; then
+    DEBUG=1
+fi
+
+if [ "$DEBUG" -eq 1 ]; then
+    echo "PASTA ATUAL: $(pwd)"
+    read -r -p "Aperta Enter pra continuar..."
+fi
+
 if ! command -v python3 &> /dev/null; then
     echo "Python 3 não encontrado nesta máquina."
     echo "Instala em https://www.python.org/downloads/ e roda este arquivo de novo."
-    read -p "Aperta Enter pra fechar..."
+    read -r -p "Aperta Enter pra fechar..."
     exit 1
+fi
+
+if [ "$DEBUG" -eq 1 ]; then
+    echo "PYTHON OK"
+    read -r -p "Aperta Enter pra continuar..."
 fi
 
 if [ ! -d "venv" ]; then
@@ -18,8 +34,29 @@ if [ ! -d "venv" ]; then
     python3 -m venv venv
 fi
 
+if [ "$DEBUG" -eq 1 ]; then
+    echo "VENV OK OU JÁ EXISTIA"
+    ls -l venv/bin/activate
+    read -r -p "Aperta Enter pra continuar..."
+fi
+
 source venv/bin/activate
-pip install -q -r requirements.txt
+
+if [ "$DEBUG" -eq 1 ]; then
+    echo "ATIVOU O VENV"
+    read -r -p "Aperta Enter pra continuar..."
+fi
+
+if [ "$DEBUG" -eq 1 ]; then
+    pip install -r requirements.txt
+else
+    pip install -q -r requirements.txt
+fi
+
+if [ "$DEBUG" -eq 1 ]; then
+    echo "PACOTES INSTALADOS"
+    read -r -p "Aperta Enter pra continuar..."
+fi
 
 # Verifica se existe uma chave válida
 API_KEY=""
@@ -32,25 +69,33 @@ fi
 if [ -z "$API_KEY" ]; then
     echo ""
     echo "Preciso da sua chave de API da Anthropic (o pesquisador te passa isso)."
-    read -p "Cola a chave aqui e aperta Enter: " API_KEY
+
+    IFS= read -r -p "Cola a chave aqui e aperta Enter: " API_KEY
 
     if [ -z "$API_KEY" ]; then
         echo ""
         echo "Nenhuma chave foi informada."
-        read -p "Aperta Enter pra fechar..."
+        read -r -p "Aperta Enter pra fechar..."
         exit 1
     fi
 
-    # Remove uma eventual linha antiga/vazia
+    # Remove qualquer linha antiga/vazia da chave,
+    # preservando as outras configurações do .env
     if [ -f ".env" ]; then
         grep -v '^ANTHROPIC_API_KEY=' .env > .env.tmp || true
         mv .env.tmp .env
     fi
 
-    # Grava a chave correta
-    echo "ANTHROPIC_API_KEY=$API_KEY" >> .env
+    # Grava a chave corretamente
+    printf '%s\n' "ANTHROPIC_API_KEY=$API_KEY" >> .env
+fi
+
+if [ "$DEBUG" -eq 1 ]; then
+    echo "CHAVE DA API OK"
+    read -r -p "Aperta Enter pra continuar..."
 fi
 
 echo ""
 echo "Abrindo o app no navegador..."
+
 streamlit run app_streamlit.py --browser.gatherUsageStats=false
