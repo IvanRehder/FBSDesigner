@@ -1,7 +1,11 @@
 @echo off
-REM Da dois cliques neste arquivo. Nao precisa saber Python pra usar isso --
-REM so precisa ter Python instalado na maquina.
 cd /d "%~dp0"
+
+set DEBUG=0
+if "%1"=="--debug" set DEBUG=1
+
+if %DEBUG%==1 echo PASTA ATUAL: %cd%
+if %DEBUG%==1 pause
 
 where python >nul 2>&1
 if errorlevel 1 (
@@ -11,48 +15,38 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
+if %DEBUG%==1 echo PYTHON OK
+if %DEBUG%==1 pause
 
 if not exist venv (
     echo Primeira vez rodando -- preparando o ambiente ^(so demora dessa vez^)...
     python -m venv venv
 )
+if %DEBUG%==1 (
+    echo VENV OK OU JA EXISTIA
+    dir venv\Scripts\activate.bat
+    pause
+)
 
 call venv\Scripts\activate.bat
-pip install -q -r requirements.txt
+if %DEBUG%==1 echo ATIVOU O VENV
+if %DEBUG%==1 pause
+
+set QUIET=-q
+if %DEBUG%==1 set QUIET=
+pip install %QUIET% -r requirements.txt
+if %DEBUG%==1 echo PACOTES INSTALADOS
+if %DEBUG%==1 pause
 
 if not exist .env (
     type nul > .env
 )
-
-set "API_KEY="
-
-for /f "tokens=1,* delims==" %%A in ('findstr /B /C:"ANTHROPIC_API_KEY=" .env 2^>nul') do (
-    set "API_KEY=%%B"
-)
-
-if not defined API_KEY (
+findstr /C:"ANTHROPIC_API_KEY" .env >nul 2>&1
+if errorlevel 1 (
     echo.
     echo Preciso da sua chave de API da Anthropic ^(o pesquisador te passa isso^).
-    set /p "API_KEY=Cola a chave aqui e aperta Enter: "
-
-    if not defined API_KEY (
-        echo Nenhuma chave foi informada.
-        pause
-        exit /b 1
-    )
-
-    findstr /V /B /C:"ANTHROPIC_API_KEY=" .env > .env.tmp
-    move /Y .env.tmp .env >nul
-
+    set /p API_KEY="Cola a chave aqui e aperta Enter: "
     echo ANTHROPIC_API_KEY=%API_KEY%>> .env
-)
-
-REM Evita a pergunta de e-mail do Streamlit na primeira execucao
-if not exist "%USERPROFILE%\.streamlit" mkdir "%USERPROFILE%\.streamlit"
-
-if not exist "%USERPROFILE%\.streamlit\credentials.toml" (
-    > "%USERPROFILE%\.streamlit\credentials.toml" echo [general]
-    >> "%USERPROFILE%\.streamlit\credentials.toml" echo email = ""
 )
 
 echo.
