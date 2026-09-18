@@ -333,6 +333,7 @@ def init_state():
         ss.messages = []
         ss.warnings = []
         ss.layer_i = 0
+        ss.usage_log = []
         if ss.req:
             ss.messages = core.load_chat(ss.req["code"])
             ss.layer_i = layer_index_for(ss.req["code"])
@@ -341,7 +342,7 @@ def ask_claude():
     ss = st.session_state
     system = core.fbs_system(ss.summary)
     with st.spinner("Claude pensando..."):
-        reply = core.chat_turn(ss.client, system, ss.messages)
+        reply = core.chat_turn(ss.client, system, ss.messages, usage_log=ss.usage_log)
     ss.messages.append({"role": "assistant", "content": reply})
     core.save_chat(ss.req["code"], ss.messages)
 
@@ -359,7 +360,7 @@ def do_advance_layer():
     ss = st.session_state
     layer = LAYERS[ss.layer_i]
     with st.spinner(f"Fechando {LAYER_LABEL[layer]}..."):
-        entry, err = core.extract_current_layer(ss.client, layer, ss.messages)
+        entry, err = core.extract_current_layer(ss.client, layer, ss.messages, usage_log=ss.usage_log)
     if err:
         ss.warnings = [err]
         return
@@ -378,14 +379,14 @@ def do_close_requirement():
     code = ss.req["code"]
     layer = LAYERS[ss.layer_i]
     with st.spinner(f"Fechando {LAYER_LABEL[layer]}..."):
-        entry, err = core.extract_current_layer(ss.client, layer, ss.messages)
+        entry, err = core.extract_current_layer(ss.client, layer, ss.messages, usage_log=ss.usage_log)
     if err:
         ss.warnings = [err]
         return
     core.save_progress(code, layer, entry)
     with st.spinner("Fechando requisito e atualizando índice..."):
         fbs, warnings = core.close_requirement(
-            ss.client, ss.req, ss.messages, ss.summary)
+            ss.client, ss.req, ss.messages, ss.summary, usage_log=ss.usage_log)
     ss.warnings = warnings
     if fbs is None:
         return  # não avança — mostra os warnings e deixa tentar de novo
@@ -397,6 +398,7 @@ def do_close_requirement():
     ss.req = core.next_pending_requirement()
     ss.messages = core.load_chat(ss.req["code"]) if ss.req else []
     ss.layer_i = 0
+    ss.usage_log = []
 
 def start_revision(code):
     ss = st.session_state
@@ -407,6 +409,7 @@ def start_revision(code):
     ss.messages = old_log or []
     ss.warnings = []
     ss.layer_i = 0
+    ss.usage_log = []
 
 
 # ── UI ────────────────────────────────────────────────────────────────────────
