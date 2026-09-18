@@ -366,6 +366,10 @@ def do_advance_layer():
     ss.warnings = []
     core.save_progress(ss.req["code"], layer, entry)
     ss.layer_i += 1
+    next_layer = LAYERS[ss.layer_i]
+    ss.messages.append({"role": "user", "content":
+        f"{LAYER_LABEL[layer]} closed. Please propose {LAYER_LABEL[next_layer]} candidates now."})
+    ask_claude()
 
 def do_close_requirement():
     """Fecha a última camada (Structure) e, só então, monta o requisito
