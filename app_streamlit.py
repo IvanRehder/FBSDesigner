@@ -288,6 +288,22 @@ def designer_gate():
             st.rerun()
     st.stop()
 
+def layer_index_for(code):
+    """Quantas camadas já foram fechadas (salvas via save_progress) pra esse
+    requisito — usado pra retomar na etapa certa depois de um refresh. Se as
+    três já estiverem fechadas (ex.: o navegador caiu durante o fechamento
+    final do requisito, entre salvar a Structure e terminar close_requirement),
+    fica na última posição válida (Structure) em vez de estourar o índice de
+    LAYERS — retomar aí só re-tenta "Fechar requisito"."""
+    progress = core.load_progress(code)
+    i = 0
+    for l in LAYERS:
+        if progress.get(l, {}).get("text", "").strip():
+            i += 1
+        else:
+            break
+    return min(i, len(LAYERS) - 1)
+
 def init_state():
     ss = st.session_state
     if "client" not in ss:
@@ -298,8 +314,10 @@ def init_state():
         ss.req = core.next_pending_requirement()
         ss.messages = []
         ss.warnings = []
+        ss.layer_i = 0
         if ss.req:
             ss.messages = core.load_chat(ss.req["code"])
+            ss.layer_i = layer_index_for(ss.req["code"])
 
 def ask_claude():
     ss = st.session_state
@@ -316,21 +334,47 @@ def open_requirement_if_needed():
         ss.messages.append({"role": "user", "content": core.opening_prompt(ss.req)})
         ask_claude()
 
-def do_close_requirement():
+def do_advance_layer():
+    """Fecha SÓ a camada corrente (Function ou Behaviour) e avança pra
+    próxima, sem tocar nas outras — cada avanço só acontece se o modelo
+    confirmar que aquela camada foi de fato fechada na conversa."""
     ss = st.session_state
-    with st.spinner("Fechando requisito, extraindo F/Be/S e atualizando índice..."):
+    layer = LAYERS[ss.layer_i]
+    with st.spinner(f"Fechando {LAYER_LABEL[layer]}..."):
+        entry, err = core.extract_current_layer(ss.client, layer, ss.messages)
+    if err:
+        ss.warnings = [err]
+        return
+    ss.warnings = []
+    core.save_progress(ss.req["code"], layer, entry)
+    ss.layer_i += 1
+
+def do_close_requirement():
+    """Fecha a última camada (Structure) e, só então, monta o requisito
+    inteiro a partir do que já foi salvo camada a camada."""
+    ss = st.session_state
+    code = ss.req["code"]
+    layer = LAYERS[ss.layer_i]
+    with st.spinner(f"Fechando {LAYER_LABEL[layer]}..."):
+        entry, err = core.extract_current_layer(ss.client, layer, ss.messages)
+    if err:
+        ss.warnings = [err]
+        return
+    core.save_progress(code, layer, entry)
+    with st.spinner("Fechando requisito e atualizando índice..."):
         fbs, warnings = core.close_requirement(
             ss.client, ss.req, ss.messages, ss.summary)
     ss.warnings = warnings
     if fbs is None:
         return  # não avança — mostra os warnings e deixa tentar de novo
-    st.toast(f"✓ {ss.req['code']} salvo")
+    st.toast(f"✓ {code} salvo")
     if ss.get("revising_code"):
         ss.revision_notice = core.downstream_affected(ss.revising_code, ss.revising_old_closed_at)
         ss.revising_code = None
         ss.revising_old_closed_at = None
     ss.req = core.next_pending_requirement()
     ss.messages = core.load_chat(ss.req["code"]) if ss.req else []
+    ss.layer_i = 0
 
 def start_revision(code):
     ss = st.session_state
@@ -340,6 +384,7 @@ def start_revision(code):
     ss.req = next(r for r in core.REQUIREMENTS if r["code"] == code)
     ss.messages = []
     ss.warnings = []
+    ss.layer_i = 0
 
 
 # ── UI ────────────────────────────────────────────────────────────────────────
@@ -446,9 +491,17 @@ if ss.req is None:
     st.stop()
 
 req = ss.req
+layer = LAYERS[ss.layer_i]
 st.subheader(f"{req['code']} — {req['name_en']} ({req['type']})")
 st.caption(f"Modalidades: {', '.join(req['modalities'])} · "
-           "o Claude conduz Function → Behaviour → Structure nesta mesma conversa")
+           "o Claude conduz a discussão de cada camada, mas você fecha uma de cada vez")
+st.progress(ss.layer_i / 3, text=" → ".join(
+    f"**{LAYER_LABEL[l]}**" if l == layer else LAYER_LABEL[l] for l in LAYERS))
+
+progress = core.load_progress(req["code"])
+for prev in LAYERS[:ss.layer_i]:
+    with st.expander(f"✅ {LAYER_LABEL[prev]} fechada"):
+        st.markdown(progress[prev]["text"])
 
 for w in ss.warnings:
     st.warning(f"{w}")
@@ -461,9 +514,14 @@ for m in ss.messages[1:]:  # esconde o opening_prompt
 
 col1, col2 = st.columns([4, 1])
 with col2:
-    if st.button("✔ Fechar requisito", type="primary", use_container_width=True):
-        do_close_requirement()
-        st.rerun()
+    if ss.layer_i < 2:
+        if st.button(f"✔ Fechar {LAYER_LABEL[layer]} e avançar", type="primary", use_container_width=True):
+            do_advance_layer()
+            st.rerun()
+    else:
+        if st.button("✔ Fechar requisito", type="primary", use_container_width=True):
+            do_close_requirement()
+            st.rerun()
 
 user_msg = st.chat_input("Responda ao Claude (discussão livre)...")
 if user_msg:
