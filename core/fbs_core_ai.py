@@ -86,10 +86,11 @@ def load_progress(code):
     p = current_out_dir() / f"{code}_progress.json"
     return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
 
-def save_progress(code, layer, close_text):
+def save_progress(code, layer, entry):
+    """entry: {"text": "<conteúdo fechado>", "revisions": <int>}"""
     p = current_out_dir() / f"{code}_progress.json"
     data = load_progress(code)
-    data[layer] = close_text
+    data[layer] = entry
     p.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
 
 def clear_progress(code):
@@ -128,21 +129,26 @@ def elapsed_wall_s(code):
     p = _started_path(code)
     return round(time.time() - float(p.read_text(encoding="utf-8")), 1) if p.exists() else None
 
-def extract_closed_layers(client, code, messages, on_retry=None, usage_log=None):
-    """Extrai do log os fechamentos de F, Be e S. Retorna (dict, err)."""
+def extract_current_layer(client, layer, messages, on_retry=None, usage_log=None):
+    """Extrai do log o fechamento de UMA camada (a corrente), mais quantas
+    propostas substancialmente diferentes foram feitas antes do designer
+    aceitar (0 se aceitou de primeira). Se a camada ainda não foi de fato
+    fechada nesta conversa, retorna erro em vez de inventar conteúdo — é
+    isso que evita salvar Behaviour/Structure vazios ou uma recusa do
+    modelo (ex.: 'I can't title this behavior without seeing it...')."""
     prompt = (
-        "From this design conversation, output ONLY a JSON object (no prose, "
-        "no fences) with the FINAL closed content of each layer, plus a revision "
-        "count per layer (how many times a substantively different proposal was "
-        "made for that layer before the designer accepted one — 0 if accepted "
-        "on the first proposal):\n"
-        '{"function": "<label + full closed Function statement>", '
-        '"behaviour": "<label + full closed Behaviour description>", '
-        '"structure": "<labels + full closed Structure elements>", '
-        '"revisions": {"function": <int>, "behaviour": <int>, "structure": <int>}}'
+        f"Has the {layer.upper()} layer been explicitly closed/agreed by the "
+        "designer in this conversation? If yes, output ONLY a JSON object (no "
+        "prose, no fences):\n"
+        '{"text": "<label + full closed statement for this layer>", "revisions": <int>}\n'
+        "revisions = how many times a substantively different proposal was made "
+        "for this layer before the designer accepted one (0 if accepted on the "
+        "first proposal).\n"
+        f"If the {layer} layer has NOT been closed yet, output exactly:\n"
+        '{"text": "", "revisions": 0}'
     )
     resp = call_with_retry(client, on_retry=on_retry, usage_log=usage_log,
-        model=MODEL, max_tokens=2000, output_config={"effort": EFFORT_MISC},
+        model=MODEL, max_tokens=1000, output_config={"effort": EFFORT_MISC},
         system="Return ONLY valid JSON, nothing else.",
         messages=messages + [{"role": "user", "content": prompt}],
     )
@@ -154,12 +160,11 @@ def extract_closed_layers(client, code, messages, on_retry=None, usage_log=None)
         raw = raw.strip()
     try:
         d = json.loads(raw)
-        missing = [k for k in ("function", "behaviour", "structure") if k not in d]
-        if missing:
-            return None, f"faltando camadas: {missing}"
-        return d, None
     except json.JSONDecodeError as e:
         return None, f"parse falhou: {e}"
+    if not d.get("text", "").strip():
+        return None, f"a camada {layer} ainda não foi fechada nesta conversa — continue a discussão antes de avançar"
+    return d, None
 
 def requirement_done(code):
     return (current_out_dir() / f"{code}.json").exists()
@@ -415,17 +420,22 @@ def summarize(client, fbs, on_retry=None, usage_log=None):
 
 # ── fechamento do requisito ───────────────────────────────────────────────────
 def close_requirement(client, req, messages, summary, on_retry=None, usage_log=None):
-    """Extrai F/Be/S do log, alimenta o índice, grava artefatos.
-    Retorna (fbs, warnings). usage_log acumula tokens/tempo de toda a
-    conversa do requisito (turnos de chat + chamadas de fechamento)."""
+    """Monta o fechamento final a partir das camadas já extraídas e salvas
+    uma a uma via save_progress (a UI só libera avançar de camada depois de
+    extract_current_layer confirmar que ela foi de fato fechada — por isso
+    aqui é seguro assumir que as três já estão em progress). Alimenta o
+    índice, grava artefatos. Retorna (fbs, warnings). usage_log acumula
+    tokens/tempo de toda a conversa do requisito (turnos de chat + chamadas
+    de fechamento)."""
     code = req["code"]
     warnings = []
     if usage_log is None:
         usage_log = []
 
-    layers, err = extract_closed_layers(client, code, messages, on_retry, usage_log)
-    if err:
-        return None, [f"extração das camadas: {err} — requisito NÃO salvo"]
+    progress = load_progress(code)
+    missing = [l for l in LAYERS if not progress.get(l, {}).get("text", "").strip()]
+    if missing:
+        return None, [f"camadas ainda não fechadas: {missing} — requisito NÃO salvo"]
 
     for layer, key in LAYER_INDEX_KEY.items():
         entries, e = extract_layer_entries(client, key, code, messages, on_retry, usage_log)
@@ -439,27 +449,27 @@ def close_requirement(client, req, messages, summary, on_retry=None, usage_log=N
         "code": code, "name_en": req["name_en"], "type": req["type"],
         "modalities": req["modalities"],
         "closed_at": time.time(),
-        "function": layers["function"],
-        "function_summary": summarize_layer(client, layers["function"], "Function", on_retry, usage_log),
-        "behaviour": layers["behaviour"],
-        "behaviour_summary": summarize_layer(client, layers["behaviour"], "Behaviour", on_retry, usage_log),
-        "structure": layers["structure"],
-        "structure_summary": summarize_layer(client, layers["structure"], "Structure", on_retry, usage_log),
+        "function": progress["function"]["text"],
+        "function_summary": summarize_layer(client, progress["function"]["text"], "Function", on_retry, usage_log),
+        "behaviour": progress["behaviour"]["text"],
+        "behaviour_summary": summarize_layer(client, progress["behaviour"]["text"], "Behaviour", on_retry, usage_log),
+        "structure": progress["structure"]["text"],
+        "structure_summary": summarize_layer(client, progress["structure"]["text"], "Structure", on_retry, usage_log),
     }
     (current_out_dir() / f"{code}.json").write_text(json.dumps(fbs, indent=2, ensure_ascii=False), encoding="utf-8")
     (current_out_dir() / f"{code}_log.json").write_text(json.dumps(messages, indent=2, ensure_ascii=False), encoding="utf-8")
     (current_out_dir() / f"{code}_summary.md").write_text(
         f"# {code} — {req['name_en']} ({req['type']})\n\n"
         f"**Modalities:** {mods}\n\n"
-        f"## Function\n{layers['function']}\n\n"
-        f"## Behaviour\n{layers['behaviour']}\n\n"
-        f"## Structure\n{layers['structure']}\n", encoding="utf-8")
+        f"## Function\n{fbs['function']}\n\n"
+        f"## Behaviour\n{fbs['behaviour']}\n\n"
+        f"## Structure\n{fbs['structure']}\n", encoding="utf-8")
     summary[code] = summarize(client, fbs, on_retry, usage_log)
     save_summary(summary)
 
     process_stats = {
         "user_turns": sum(1 for m in messages if m["role"] == "user"),
-        "revisions": layers.get("revisions", {}),
+        "revisions": {l: progress[l].get("revisions", 0) for l in LAYERS},
         "wall_clock_s": elapsed_wall_s(code),
     }
     totals = save_usage(code, usage_log, process_stats)
