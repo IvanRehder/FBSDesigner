@@ -14,11 +14,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MODEL   = "claude-opus-4-8"
+MODEL      = "claude-opus-4-8"  # diálogo real (F/Be/S) — aqui a qualidade importa
+MODEL_MISC = "claude-sonnet-5"  # tarefas mecânicas (extrair camada fechada, resumir, indexar) — bem mais barato, sem perda perceptível
 # preço oficial Anthropic, USD por milhão de tokens (fonte: platform.claude.com/docs/pricing)
-PRICE_PER_MTOK = {"input": 5.0, "output": 25.0}
+PRICE_PER_MTOK = {
+    MODEL:      {"input": 5.0, "output": 25.0},
+    MODEL_MISC: {"input": 2.0, "output": 10.0},
+}
 # effort: vai dentro de output_config={"effort": ...}
-# Opções (Opus 4.8): "low" | "medium" | "high" | "xhigh" | "max"
+# Opções (Opus 4.8 e Sonnet 5): "low" | "medium" | "high" | "xhigh" | "max"
 EFFORT      = "high"   # diálogo (F/Be/S)
 EFFORT_MISC = "low"    # resumos (tarefa trivial)
 BASE_OUT_DIR = Path(os.environ.get("FBS_OUT_DIR", "out"))
@@ -148,7 +152,7 @@ def extract_current_layer(client, layer, messages, on_retry=None, usage_log=None
         '{"text": "", "revisions": 0}'
     )
     resp = call_with_retry(client, on_retry=on_retry, usage_log=usage_log,
-        model=MODEL, max_tokens=1000, output_config={"effort": EFFORT_MISC},
+        model=MODEL_MISC, max_tokens=1000, output_config={"effort": EFFORT_MISC},
         system="Return ONLY valid JSON, nothing else.",
         messages=messages + [{"role": "user", "content": prompt}],
     )
@@ -333,6 +337,7 @@ def call_with_retry(client, on_retry=None, usage_log=None, **kwargs):
             resp = client.messages.create(**kwargs)
             if usage_log is not None:
                 usage_log.append({
+                    "model": kwargs.get("model"),
                     "input_tokens": resp.usage.input_tokens,
                     "output_tokens": resp.usage.output_tokens,
                     "cache_read_tokens": getattr(resp.usage, "cache_read_input_tokens", 0) or 0,
@@ -360,7 +365,11 @@ def usage_totals(usage_log):
     tout = sum(u["output_tokens"] for u in usage_log)
     tcache_r = sum(u.get("cache_read_tokens", 0) for u in usage_log)
     tcache_w = sum(u.get("cache_write_tokens", 0) for u in usage_log)
-    cost = tin / 1e6 * PRICE_PER_MTOK["input"] + tout / 1e6 * PRICE_PER_MTOK["output"]
+    cost = sum(
+        u["input_tokens"] / 1e6 * PRICE_PER_MTOK[u.get("model", MODEL)]["input"]
+        + u["output_tokens"] / 1e6 * PRICE_PER_MTOK[u.get("model", MODEL)]["output"]
+        for u in usage_log
+    )
     return {
         "calls": len(usage_log),
         "input_tokens": tin,
@@ -396,7 +405,7 @@ def extract_layer_entries(client, layer_key, code, messages, on_retry=None, usag
         f"Behaviours were closed, output 3 items)."
     )
     resp = call_with_retry(client, on_retry=on_retry, usage_log=usage_log,
-        model=MODEL, max_tokens=800, output_config={"effort": EFFORT_MISC},
+        model=MODEL_MISC, max_tokens=800, output_config={"effort": EFFORT_MISC},
         system="Return ONLY valid JSON, nothing else.",
         messages=messages + [{"role": "user", "content": prompt}],
     )
@@ -413,7 +422,7 @@ def extract_layer_entries(client, layer_key, code, messages, on_retry=None, usag
 
 def summarize_layer(client, text, layer_label, on_retry=None, usage_log=None):
     resp = call_with_retry(client, on_retry=on_retry, usage_log=usage_log,
-        model=MODEL, max_tokens=40, output_config={"effort": EFFORT_MISC},
+        model=MODEL_MISC, max_tokens=40, output_config={"effort": EFFORT_MISC},
         messages=[{"role": "user", "content":
             f"In ONE short phrase (max 12 words), title this {layer_label}: {text}"}],
     )
@@ -421,7 +430,7 @@ def summarize_layer(client, text, layer_label, on_retry=None, usage_log=None):
 
 def summarize(client, fbs, on_retry=None, usage_log=None):
     resp = call_with_retry(client, on_retry=on_retry, usage_log=usage_log,
-        model=MODEL, max_tokens=100, output_config={"effort": EFFORT_MISC},
+        model=MODEL_MISC, max_tokens=100, output_config={"effort": EFFORT_MISC},
         messages=[{"role": "user", "content":
             "Summarize this FBS decision in ONE short sentence "
             f"(function + key structure choice): {json.dumps(fbs)}"}],
