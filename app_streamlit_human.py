@@ -174,6 +174,14 @@ def toy_gate():
     if status.get("acknowledged"):
         return
 
+    if ss.get("show_example_toy"):
+        st.title("Exemplo preenchido")
+        render_example()
+        if st.button("← Voltar pro aquecimento"):
+            ss.show_example_toy = False
+            st.rerun()
+        st.stop()
+
     if "toy_entries" not in ss:
         ss.toy_entries = {"function": [], "behaviour": [], "structure": []}
         ss.toy_layer_i = 0
@@ -208,7 +216,16 @@ def toy_gate():
         st.stop()
 
     layer = LAYERS[ss.toy_layer_i]
-    st.success(f"### {toy_req['name_en']}\nIntent: {toy_req['intent']}")
+    mods = ", ".join(toy_req.get("modalities", []))
+    st.success(
+        f"### {toy_req['name_en']}\n"
+        f"{toy_req.get('context', '')}\n\n"
+        f"**Modalidades:** {mods}  \n"
+        f"**Intent:** {toy_req['intent']}"
+    )
+    if st.button("💡 Ver o exemplo"):
+        ss.show_example_toy = True
+        st.rerun()
 
     st.progress(ss.toy_layer_i / 3, text=" → ".join(
         f"**{LAYER_LABEL[l]}**" if l == layer else LAYER_LABEL[l] for l in LAYERS))
@@ -231,6 +248,7 @@ def toy_gate():
     key_letter = {"function": "F", "behaviour": "Be", "structure": "S"}[layer]
     suggested = f"{key_letter}-TOY.{n + 1}"
     label = st.text_input("Label", value=suggested, key=f"toy_label_{layer}_{n}")
+    st.caption("O Label é só um identificador curto (pode deixar o sugerido) — o conteúdo de verdade vai no campo abaixo.")
     text = st.text_area(f"Descreva este {LAYER_LABEL[layer]}", key=f"toy_text_{layer}_{n}")
 
     col1, col2 = st.columns(2)

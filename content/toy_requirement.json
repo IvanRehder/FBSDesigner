@@ -2,5 +2,7 @@
   "code": "TOY",
   "name_en": "Notify user that the coffee has gotten too cold to drink",
   "type": "toy",
+  "context": "Imagine a smart mug: it senses the coffee's temperature and can notify the user through its own built-in interface (screen, speaker, etc.) — not through a phone app.",
+  "modalities": ["Screen", "Audio-out"],
   "intent": "Warn the user when their coffee has cooled below a temperature they'd consider drinkable."
 }
