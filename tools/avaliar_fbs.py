@@ -2,6 +2,9 @@
 """
 avaliar_fbs.py — Avalia automaticamente os requisitos fechados de cada
 designer, usando um LLM juiz, com o mesmo rubrico do prompt_avaliacao_fbs.md.
+Também soma o tempo real gasto (wall_clock_s de cada Rxx_usage.json, sem
+custo de API) e coloca esse resumo no topo do mesmo relatório — antes esse
+cálculo vivia em tempo_total.py, separado; foi incorporado aqui.
 
 Roda OFFLINE, fora dos apps do Streamlit — o pesquisador executa manualmente
 depois de baixar os dados (zip do admin, pasta local, ou merge de branch).
@@ -79,6 +82,33 @@ def collect_designer_data(designer_dir, codes):
         if p.exists():
             items.append(json.loads(p.read_text()))
     return items
+
+
+def resumo_tempo(designer_dir):
+    """Soma o wall_clock_s de todos os Rxx_usage.json do designer — tempo
+    real medido, sem gastar API (não depende do LLM avaliador). Retorna
+    None se não houver nenhum _usage.json com tempo registrado."""
+    total_s = 0
+    por_requisito = []
+    for p in sorted(designer_dir.glob("R*_usage.json")):
+        data = json.loads(p.read_text(encoding="utf-8"))
+        s = data.get("totals", {}).get("wall_clock_s")
+        if s is not None:
+            total_s += s
+            por_requisito.append((p.stem.replace("_usage", ""), s))
+    if not por_requisito:
+        return None
+
+    lines = ["## Tempo gasto", ""]
+    for code, s in por_requisito:
+        lines.append(f"- {code}: {s / 60:.1f} min")
+    lines.append("")
+    lines.append(
+        f"**Total:** {total_s / 60:.1f} min ({total_s / 3600:.2f} h) · "
+        f"**Média por requisito:** {(total_s / len(por_requisito)) / 60:.1f} min"
+    )
+    lines.append("\n---\n")
+    return "\n".join(lines)
 
 
 def evaluate_designer(client, designer_dir, requirements):
@@ -159,13 +189,16 @@ def main():
         print(f"Avaliando {d.name}...")
         report, err = evaluate_designer(client, d, requirements)
         if err:
-            print(f"  \u26a0 {err}")
+            print(f"  ⚠ {err}")
             continue
+        tempo = resumo_tempo(d)
+        if tempo:
+            report = tempo + "\n" + report
         out_path.write_text(report, encoding="utf-8")
         if "AVISO: esta avaliação foi CORTADA" in report:
-            print(f"  \u26a0 salvo em {out_path} — MAS FOI CORTADA, veja o aviso no final do arquivo")
+            print(f"  ⚠ salvo em {out_path} — MAS FOI CORTADA, veja o aviso no final do arquivo")
         else:
-            print(f"  \u2713 salvo em {out_path}")
+            print(f"  ✓ salvo em {out_path}")
 
 
 if __name__ == "__main__":
