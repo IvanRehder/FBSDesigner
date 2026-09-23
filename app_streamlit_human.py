@@ -56,6 +56,26 @@ def _screen_popup(path, caption):
         st.caption(caption)
     st.image(str(path), use_container_width=True)
 
+@st.dialog("Requisito fechado", width="large")
+def _view_requirement_popup(code):
+    """Só-leitura: mostra o F/Be/S já salvo, sem reabrir nem exigir
+    fechar de novo — pra quem só quer conferir o que já foi decidido."""
+    p = core.current_out_dir() / f"{code}.json"
+    fbs = json.loads(p.read_text(encoding="utf-8"))
+    mods = ", ".join(fbs.get("modalities", []))
+    st.subheader(f"{fbs['code']} — {fbs.get('name_en', '')} ({fbs.get('type', '')})")
+    st.caption(f"Modalidades: {mods}")
+    st.markdown("##### Function")
+    st.markdown(fbs.get("function") or "_(vazio)_")
+    st.markdown("##### Behaviour")
+    st.markdown(fbs.get("behaviour") or "_(vazio)_")
+    st.markdown("##### Structure")
+    st.markdown(fbs.get("structure") or "_(vazio)_")
+    st.divider()
+    if st.button("✏️ Revisar este requisito", use_container_width=True):
+        start_revision(code)
+        st.rerun()
+
 def render_screens():
     screens = json.loads((CONTENT_DIR / "screens.json").read_text(encoding="utf-8"))
     if not screens:
@@ -367,6 +387,11 @@ def do_close_requirement():
     ss.layer_i = 0
     if ss.req:
         core.mark_started(ss.req["code"])
+        saved = core.load_manual(ss.req["code"])
+        if saved:
+            ss.entries = saved["entries"]
+            ss.revisions = saved["revisions"]
+            ss.layer_i = saved["layer_i"]
 
 def start_revision(code):
     ss = st.session_state
@@ -407,18 +432,13 @@ with st.sidebar:
                 text=f"{done}/{len(core.REQUIREMENTS)} requisitos")
     st.divider()
     for r in core.REQUIREMENTS:
-        mark = "✅" if core.requirement_done(r["code"]) else (
-            "🔵" if ss.req and r["code"] == ss.req["code"] else "⚪")
-        st.write(f"{mark} {r['code']} — {r['name_en']}")
-
-    done_codes = [r["code"] for r in core.REQUIREMENTS if core.requirement_done(r["code"])]
-    if done_codes:
-        st.divider()
-        st.caption("Revisar um requisito já fechado")
-        pick = st.selectbox("Requisito", done_codes, label_visibility="collapsed", key="revise_pick")
-        if st.button("✏️ Revisar", use_container_width=True):
-            start_revision(pick)
-            st.rerun()
+        code = r["code"]
+        if core.requirement_done(code):
+            if st.button(f"✅ {code} — {r['name_en']}", key=f"view_{code}", use_container_width=True):
+                _view_requirement_popup(code)
+        else:
+            mark = "🔵" if ss.req and code == ss.req["code"] else "⚪"
+            st.write(f"{mark} {code} — {r['name_en']}")
 
 if st.session_state.get("show_intro"):
     render_intro()
