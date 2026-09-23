@@ -397,7 +397,7 @@ def do_close_requirement():
         ss.revising_old_closed_at = None
     ss.req = core.next_pending_requirement()
     ss.messages = core.load_chat(ss.req["code"]) if ss.req else []
-    ss.layer_i = 0
+    ss.layer_i = layer_index_for(ss.req["code"]) if ss.req else 0
     ss.usage_log = []
 
 def start_revision(code):
