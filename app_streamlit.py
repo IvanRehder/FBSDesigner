@@ -359,10 +359,22 @@ def init_state():
             ss.layer_i = layer_index_for(ss.req["code"])
 
 def ask_claude():
+    """Se a chamada falhar, a mensagem que ficou sem resposta permanece
+    no lugar — ela marca "última mensagem é do usuário, ainda sem
+    resposta", e é isso que open_requirement_if_needed() usa pra saber
+    que precisa tentar de novo. Mostra um botão de retry explícito na
+    hora, em vez de travar em branco ou depender da pessoa adivinhar
+    (F5, clicar em algo aleatório) o que fazer."""
     ss = st.session_state
     system = core.fbs_system(ss.summary)
-    with st.spinner("Claude pensando..."):
-        reply = core.chat_turn(ss.client, system, ss.messages, usage_log=ss.usage_log)
+    try:
+        with st.spinner("Claude pensando..."):
+            reply = core.chat_turn(ss.client, system, ss.messages, usage_log=ss.usage_log)
+    except Exception as e:
+        st.warning(f"Falha ao falar com o Claude ({e}).")
+        if st.button("🔄 Tentar de novo", key=f"retry_{ss.req['code']}_{len(ss.messages)}"):
+            st.rerun()
+        return
     ss.messages.append({"role": "assistant", "content": reply})
     core.save_chat(ss.req["code"], ss.messages)
 
@@ -371,6 +383,11 @@ def open_requirement_if_needed():
     if not ss.messages:
         core.mark_started(ss.req["code"])
         ss.messages.append({"role": "user", "content": core.opening_prompt(ss.req)})
+        ask_claude()
+    elif ss.messages[-1]["role"] == "user":
+        # a tentativa anterior de resposta falhou (ver ask_claude) — tenta de novo,
+        # cobre a abertura do requisito, o auto-avanço de camada e uma mensagem
+        # digitada manualmente, sem precisar de lógica de retry separada em cada um
         ask_claude()
 
 def do_advance_layer():

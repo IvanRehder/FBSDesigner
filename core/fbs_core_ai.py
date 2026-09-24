@@ -345,7 +345,14 @@ def call_with_retry(client, on_retry=None, usage_log=None, **kwargs):
                     "elapsed_s": round(time.time() - start, 2),
                 })
             return resp
-        except (anthropic.APIConnectionError, anthropic.APITimeoutError):
+        except (anthropic.APIConnectionError, anthropic.APITimeoutError, anthropic.RateLimitError):
+            wait = 2 ** attempt
+            if on_retry:
+                on_retry(wait)
+            time.sleep(wait)
+        except anthropic.APIStatusError as e:
+            if e.status_code < 500:
+                raise  # erro do cliente (ex.: modelo inválido) — não adianta tentar de novo
             wait = 2 ** attempt
             if on_retry:
                 on_retry(wait)
